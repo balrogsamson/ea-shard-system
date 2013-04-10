@@ -1,0 +1,117 @@
+/**
+ * This function will provide a crystal with experience points. These
+ * points will be used for leveling purposes. In addition to storing
+ * experience points, this function will provide a player with the next
+ * level shard when the experience threshold is met.
+ *
+ * @param item_id The crystal to receive experience points.
+ */
+function script CSExperienceHandler {
+    // Function definitions
+    function storeExperience;
+    function upgradeShard;
+    function getEquipSlot;
+    function getMobExperience;
+
+    // "Constants"
+    // TODO: Fix this.
+    set .SS_EXP_TO_LEVEL[4], 100, 100, 100, 100, 100;
+
+    // Data definitions
+    set .itemID, getarg(0);
+    set .instanceID, getequipcardid(getEquipSlot, 3);
+    set .level, getequipcardid(getEquipSlot, 4);
+    set .equipslot, getEquipSlot;
+    
+    // CSExperienceHandler main call.
+    storeExperience;
+
+    // FUNCTIONS
+    // ========================================================================
+    /**
+     * This function will store experience points gained from slain
+     * mobs into a dynamic variable for later use by the Shard System.
+     */ 
+    function storeExperience {
+        // Local variables
+        set .@playerID, getcharid(0);                       // The attached player.
+        set .@ownerID, getequipcardid(getEquipSlot, 2);     // The owner of the shard.
+
+        // If owner and attached player ids do not match,
+        // attach the owner to the script for storing exp.
+        if(.@playerID != .@ownerID)
+            attachrid(.@ownerID);
+        
+        // Store slain mob experience into variable.
+        setd "#SS_" + .itemID + .instanceID,
+            getd("#SS_" + .itemID + "_" + .instanceID) + (getMobExperience);
+            
+        // Check if the shard has reached level threshold.
+        // If so, provide the player with the next level shard.
+        if(getd("#SS_" + .itemID + "_" + .instanceID) >= .SS_EXP_TO_LEVEL[.level - 1])
+            upgradeShard;
+    }
+
+
+
+    /**
+     * Upgrades the shard by 1 level when the experience threshold is met.
+     */
+    function upgradeShard {
+        /* Redistribute experience. Not implemented yet.
+        if(getd("#SS_" + .itemID + "_" + .instanceID) > .SS_EXP_TO_LEVEL[.level - 1])
+            setd "#SS_" + .itemID + "_" + .instanceID, getd("#SS_" + (.itemID + 1) + "_" + .instanceID) +
+                (getd("#SS_" + .itemID + "_" + .instanceID) - .SS_EXP_TO_LEVEL[.@level - 1])
+        */
+        
+        // Zero-out the old data.
+        setd "#SS_" + .itemID + "_" + .instanceID, 0;
+        
+        // Reattach the player if they were detached.
+        if(.@playerID != playerattached())
+            attachrid(.@playerID);
+        
+        // Unequip and delete the old shard.
+        unequip .equipslot;
+        delitem .itemID;
+        
+        // Create and equip the new shard.
+        generateShard(.itemID + 1, .@playerID, generateKey, .level + 1);
+        equip .itemID + 1;
+    }
+
+
+
+    /**
+     * Checks the attached player's equipment for the
+     * parameter item_id. If it is found, returns the
+     * equipment slot.
+     */
+    function getEquipSlot {
+        if(getequipid(EQI_ACC_L) == getarg(0))
+            set .@equipslot, EQI_ACC_L;
+        else
+            set .@equipslot, EQI_ACC_R;
+
+        return .@equipslot;
+    }
+
+
+
+    /**
+     * 
+     */
+    function getShardLevel {
+        explode(.@item_name$, , "L");
+    }
+    
+    
+    
+    /**
+     * Returns the last slain mob's experience reward.
+     */
+    function getMobExperience {
+        return getmonsterinfo(killedrid, MOB_BASEEXP);
+    }
+}
+ 
