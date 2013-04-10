@@ -99,10 +99,11 @@ function script CSExperienceHandler {
 
 
     /**
-     * 
+     * Returns the Shard level. This is always the last
+     * character in the name field of the shard.
      */
     function getShardLevel {
-        explode(.@item_name$, , "L");
+        return;
     }
     
     
