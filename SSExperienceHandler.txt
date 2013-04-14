@@ -19,8 +19,8 @@ function script CSExperienceHandler {
 
     // Data definitions
     set .SHARD_ID, getShardID;
+    set .SHARD_KEY, getShardKey;
     set .SHARD_LEVEL, getShardLevel;
-    set .KEY, getKey;
     set .EQUIP_SLOT, getEquipSlot;
     
     // CSExperienceHandler main call.
@@ -35,7 +35,7 @@ function script CSExperienceHandler {
     function storeExperience {
         // Local variables
         set .@playerID, getcharid(0);                       // The attached player.
-        set .@ownerID, getequipcardid(getEquipSlot, 2);     // The owner of the shard.
+        set .@ownerID, getOwnerID;                          // The owner of the shard.
 
         // If owner and attached player ids do not match,
         // attach the owner to the script for storing exp.
@@ -44,11 +44,11 @@ function script CSExperienceHandler {
         
         // Store slain mob experience into variable.
         setd "#SS_" + .SHARD_ID + .INSTANCE_ID,
-            getd("#SS_" + .SHARD_ID + "_" + .INSTANCE_ID) + (getMobExperience);
+            getd("#SS_" + .SHARD_ID + "_" + .KEY) + (getMobExperience);
             
         // Check if the shard has reached level threshold.
         // If so, provide the player with the next level shard.
-        if(getd("#SS_" + .SHARD_ID + "_" + .INSTANCE_ID) >= .SS_EXP_TO_LEVEL[.level - 1])
+        if(getd("#SS_" + .SHARD_ID + "_" + .KEY) >= .SS_EXP_TO_LEVEL[.level - 1])
             upgradeShard;
     }
 
@@ -65,15 +65,15 @@ function script CSExperienceHandler {
         */
         
         // Zero-out the old data.
-        setd "#SS_" + .SHARD_ID + "_" + .INSTANCE_ID, 0;
+        setd "#SS_" + .SHARD_ID + "_" + .KEY, 0;
         
         // Reattach the player if they were detached.
         if(.@playerID != playerattached())
             attachrid(.@playerID);
         
         // Unequip and delete the old shard.
-        unequip .equipslot;
-        delitem .itemID;
+        unequip .EQUIP_SLOT;
+        delitem .SHARD_ID;
         
         // Create and equip the new shard.
         generateShard(.SHARD_ID + 1, .@playerID, generateKey, .SHARD_LEVEL + 1);
