@@ -43,33 +43,34 @@ function script CSExperienceHandler {
             attachrid(.@ownerID);
         
         // Store slain mob experience into variable.
-        setd "#SS_" + .SHARD_ID + .INSTANCE_ID,
-            getd("#SS_" + .SHARD_ID + "_" + .KEY) + (getMobExperience);
+        setd "#SS_" + .SHARD_ID + "_" + .SHARD_KEY,
+            getd("#SS_" + .SHARD_ID + "_" + .SHARD_KEY) + 
+                (getMobExperience);
             
         // Check if the shard has reached level threshold.
         // If so, provide the player with the next level shard.
-        if(getd("#SS_" + .SHARD_ID + "_" + .KEY) >= .SS_EXP_TO_LEVEL[.level - 1])
+        if(getd("#SS_" + .SHARD_ID + "_" + .SHARD_KEY) >= .SS_EXP_TO_LEVEL[.level - 1])
             upgradeShard;
     }
 
 
 
     /**
-     * Upgrades the shard by 1 level when the experience threshold is met.
+     * Level up the shard.
      */
     function upgradeShard {
-        /* Redistribute experience. Not implemented yet.
-        if(getd("#SS_" + .itemID + "_" + .instanceID) > .SS_EXP_TO_LEVEL[.level - 1])
-            setd "#SS_" + .itemID + "_" + .instanceID, getd("#SS_" + (.itemID + 1) + "_" + .instanceID) +
-                (getd("#SS_" + .itemID + "_" + .instanceID) - .SS_EXP_TO_LEVEL[.@level - 1])
-        */
+        // Redistribute experience. Not implemented yet.
+        //if(getd("#SS_" + .itemID + "_" + .instanceID) > .SS_EXP_TO_LEVEL[.level - 1])
+        //    setd "#SS_" + .itemID + "_" + .instanceID, getd("#SS_" + (.itemID + 1) + "_" + .instanceID) +
+        //        (getd("#SS_" + .itemID + "_" + .instanceID) - .SS_EXP_TO_LEVEL[.@level - 1])
         
         // Zero-out the old data.
-        setd "#SS_" + .SHARD_ID + "_" + .KEY, 0;
+        setd "#SS_" + .SHARD_ID + "_" + .SHARD_KEY, 0;
         
         // Reattach the player if they were detached.
-        if(.@playerID != playerattached())
-            attachrid(.@playerID);
+        // Not implemented yet.
+        //if(.@playerID != playerattached())
+        //    attachrid(.@playerID);
         
         // Unequip and delete the old shard.
         unequip .EQUIP_SLOT;
@@ -82,6 +83,48 @@ function script CSExperienceHandler {
 
 
 
+    // ACCESSOR FUNCTIONS
+    // ==================================================
+    /**
+     * Returns the original owners account ID.
+     */
+    function getOwnerID {
+        
+    }
+    
+    
+    
+    /**
+     * Returns the item_id parameter.
+     * Used to build dynamic variables.
+     */
+    function getShardID {
+        return getarg(0);
+    }
+    
+    
+    
+    /**
+     * Returns the key associated with the item id.
+     * This is used to build dynamic variables.
+     */
+    function getShardKey {
+        // Grab data from card 1 and 2
+        // then piece it together.
+    }
+
+
+
+    /**
+     * Returns the Shard level. This is always in the
+     * weapon level field.
+     */
+    function getShardLevel {
+        return getiteminfo(.SHARD_ID, 13);
+    }
+    
+    
+    
     /**
      * Checks the attached player's equipment for the
      * parameter item_id. If it is found, returns the
@@ -94,17 +137,7 @@ function script CSExperienceHandler {
             set .@equipslot, EQI_ACC_R;
 
         return .@equipslot;
-    }
-
-
-
-    /**
-     * Returns the Shard level. This is always in the
-     * weapon level field.
-     */
-    function getShardLevel {
-        return getiteminfo(.SHARD_ID, 13);
-    }
+    }   
     
     
     
