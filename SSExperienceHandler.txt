@@ -18,9 +18,9 @@ function script CSExperienceHandler {
     set .SS_EXP_TO_LEVEL[4], 100, 100, 100, 100, 100;
 
     // Data definitions
-    set .itemID, getarg(0);
-    set .instanceID, getequipcardid(getEquipSlot, 3);
-    set .level, getequipcardid(getEquipSlot, 4);
+    set .itemID, getItemID;
+    set .instanceID, getInstanceID;
+    set .level, getShardLevel;
     set .equipslot, getEquipSlot;
     
     // CSExperienceHandler main call.
