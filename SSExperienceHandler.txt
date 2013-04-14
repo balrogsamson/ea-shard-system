@@ -18,10 +18,10 @@ function script CSExperienceHandler {
     set .SS_EXP_TO_LEVEL[4], 100, 100, 100, 100, 100;
 
     // Data definitions
-    set .itemID, getItemID;
-    set .instanceID, getInstanceID;
-    set .level, getShardLevel;
-    set .equipslot, getEquipSlot;
+    set .SHARD_ID, getShardID;
+    set .SHARD_LEVEL, getShardLevel;
+    set .INSTANCE_ID, getInstanceID;
+    set .EQUIP_SLOT, getEquipSlot;
     
     // CSExperienceHandler main call.
     storeExperience;
@@ -43,12 +43,12 @@ function script CSExperienceHandler {
             attachrid(.@ownerID);
         
         // Store slain mob experience into variable.
-        setd "#SS_" + .itemID + .instanceID,
-            getd("#SS_" + .itemID + "_" + .instanceID) + (getMobExperience);
+        setd "#SS_" + .SHARD_ID + .INSTANCE_ID,
+            getd("#SS_" + .SHARD_ID + "_" + .INSTANCE_ID) + (getMobExperience);
             
         // Check if the shard has reached level threshold.
         // If so, provide the player with the next level shard.
-        if(getd("#SS_" + .itemID + "_" + .instanceID) >= .SS_EXP_TO_LEVEL[.level - 1])
+        if(getd("#SS_" + .SHARD_ID + "_" + .INSTANCE_ID) >= .SS_EXP_TO_LEVEL[.level - 1])
             upgradeShard;
     }
 
@@ -65,7 +65,7 @@ function script CSExperienceHandler {
         */
         
         // Zero-out the old data.
-        setd "#SS_" + .itemID + "_" + .instanceID, 0;
+        setd "#SS_" + .SHARD_ID + "_" + .INSTANCE_ID, 0;
         
         // Reattach the player if they were detached.
         if(.@playerID != playerattached())
@@ -88,7 +88,7 @@ function script CSExperienceHandler {
      * equipment slot.
      */
     function getEquipSlot {
-        if(getequipid(EQI_ACC_L) == getarg(0))
+        if(getequipid(EQI_ACC_L) == )
             set .@equipslot, EQI_ACC_L;
         else
             set .@equipslot, EQI_ACC_R;
@@ -103,7 +103,7 @@ function script CSExperienceHandler {
      * weapon level field.
      */
     function getShardLevel {
-        return getiteminfo(getItemID, 13);
+        return getiteminfo(.SHARD_ID, 13);
     }
     
     
