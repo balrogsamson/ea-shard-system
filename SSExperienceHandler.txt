@@ -20,7 +20,7 @@ function script CSExperienceHandler {
     // Data definitions
     set .SHARD_ID, getShardID;
     set .SHARD_LEVEL, getShardLevel;
-    set .INSTANCE_ID, getInstanceID;
+    set .KEY, getKey;
     set .EQUIP_SLOT, getEquipSlot;
     
     // CSExperienceHandler main call.
@@ -76,8 +76,8 @@ function script CSExperienceHandler {
         delitem .itemID;
         
         // Create and equip the new shard.
-        generateShard(.itemID + 1, .@playerID, generateKey, .level + 1);
-        equip .itemID + 1;
+        generateShard(.SHARD_ID + 1, .@playerID, generateKey, .SHARD_LEVEL + 1);
+        equip .SHARD_ID + 1;
     }
 
 
@@ -88,7 +88,7 @@ function script CSExperienceHandler {
      * equipment slot.
      */
     function getEquipSlot {
-        if(getequipid(EQI_ACC_L) == )
+        if(getequipid(EQI_ACC_L) == .SHARD_ID)
             set .@equipslot, EQI_ACC_L;
         else
             set .@equipslot, EQI_ACC_R;
