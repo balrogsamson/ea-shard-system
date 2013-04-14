@@ -99,11 +99,11 @@ function script CSExperienceHandler {
 
 
     /**
-     * Returns the Shard level. This is always the last
-     * character in the name field of the shard.
+     * Returns the Shard level. This is always in the
+     * weapon level field.
      */
     function getShardLevel {
-        return;
+        return getiteminfo(getItemID, 13);
     }
     
     
