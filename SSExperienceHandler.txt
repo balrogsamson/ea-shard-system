@@ -86,15 +86,6 @@ function script CSExperienceHandler {
     // ACCESSOR FUNCTIONS
     // ==================================================
     /**
-     * Returns the original owners account ID.
-     */
-    function getOwnerID {
-        
-    }
-    
-    
-    
-    /**
      * Returns the item_id parameter.
      * Used to build dynamic variables.
      */
@@ -109,8 +100,24 @@ function script CSExperienceHandler {
      * This is used to build dynamic variables.
      */
     function getShardKey {
-        // Grab data from card 1 and 2
-        // then piece it together.
+        set .@equipSlot, getEquipSlot;
+        set .@shardKey, getequippedcard(1, .@equipSlot) << 16;
+        set .@shardKey, .@shardKey + getequippedcard(2, .@equipSlot);
+    
+        return .@shardKey;
+    }
+    
+    
+    
+    /**
+     * Returns the original owners account ID.
+     */
+    function getOwnerID {
+        set .@equipSlot, getEquipSlot;
+        set .@ownerID, getequipcardid(3, getEquipSlot) << 16;
+        set .@ownerID, .@ownerID + getequipcardid(4, getEquipSlot);
+    
+        return .@ownerID;
     }
 
 
