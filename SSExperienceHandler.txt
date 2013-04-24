@@ -97,27 +97,22 @@ function script CSExperienceHandler {
     
     /**
      * Returns the key associated with the item id.
-     * This is used to build dynamic variables.
+     * Stored in the 1st and 2nd card slot.
      */
     function getShardKey {
         set .@equipSlot, getEquipSlot;
-        set .@shardKey, getequippedcard(1, .@equipSlot) << 16;
-        set .@shardKey, .@shardKey + getequippedcard(2, .@equipSlot);
-    
-        return .@shardKey;
+        return (getequippedcard() << 16) + getequippedcard();
     }
     
     
     
     /**
      * Returns the original owners account ID.
+     * Stored in the 3rd and 4th card slot.
      */
     function getOwnerID {
         set .@equipSlot, getEquipSlot;
-        set .@ownerID, getequipcardid(3, getEquipSlot) << 16;
-        set .@ownerID, .@ownerID + getequipcardid(4, getEquipSlot);
-    
-        return .@ownerID;
+        return (getequipcardid() << 16) + getequipcardid();
     }
 
 
