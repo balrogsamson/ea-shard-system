@@ -5,16 +5,24 @@
  * level shard when the experience threshold is met.
  *
  * @param item_id The crystal to receive experience points.
+ *
+ * --------------------------------------------------------------------
  */
 function script CSExperienceHandler {
-    // Function definitions
+    // Player-related function declarations.
     function storeExperience;
     function upgradeShard;
     function getEquipSlot;
     function getMobExperience;
+    
+    // Shard-related function declarations.
+    function getShardID;
+    function getShardKey;
+    function getShardLevel;
+    function getOwnerID;
 
     // "Constants"
-    // TODO: Fix this.
+    // TODO: Fix this. Make a logrithmic function for determining exp.
     set .SS_EXP_TO_LEVEL[4], 100, 100, 100, 100, 100;
 
     // Data definitions
@@ -25,6 +33,7 @@ function script CSExperienceHandler {
     
     // CSExperienceHandler main call.
     storeExperience;
+    return;
 
     // FUNCTIONS
     // ========================================================================
@@ -101,7 +110,7 @@ function script CSExperienceHandler {
      */
     function getShardKey {
         set .@equipSlot, getEquipSlot;
-        return (getequippedcard() << 16) + getequippedcard();
+        return (getequipcardid(.@equipSlot, 1) << 16) + getequipcardid(.@equipSlot, 2);
     }
     
     
@@ -112,7 +121,7 @@ function script CSExperienceHandler {
      */
     function getOwnerID {
         set .@equipSlot, getEquipSlot;
-        return (getequipcardid() << 16) + getequipcardid();
+        return (getequipcardid(.@equipSlot, 3) << 16) + getequipcardid(.@equipSlot, 4);
     }
 
 

@@ -10,10 +10,9 @@ function	script	generateShard	{
     set .@itemID, getarg(0);
     set .@ownerID, getarg(1);
     set .@key, getarg(2);
-    //set .@level, getarg(3);
 
     // Generate the shard.
-	getitem2 .@itemID,1,1,0,0,,,.@ownerID,.@key;
+	getitem2 .@itemID,1,1,0,0,card1,card2,card3,card4;
 }
 
 
