@@ -1,18 +1,28 @@
 /**
  * Generates a shard from parameters passed.
  * @param itemID The item ID of the shard being created.
- * @param ownerID The account ID of the shard's owner.
  * @param level The level of the shard being created.
- * @param key A unique value. It's actually the NPC GID.
  */
-function	script	generateShard	{
+function	script	createShard	{
     // Parameter data.
     set .@itemID, getarg(0);
-    set .@ownerID, getarg(1);
-    set .@key, getarg(2);
+    
+    // Card info.
+    set .@GID, generateKey;
+    set .@RID, getcharid(0);
+    
+    
+    // Store GID in card1 and card2.
+    set .@card1, .@GID & 65535;
+    set .@card2, .@GID >> 16;
+    
+    // Store RID in card3 and card4.
+    set .@card3, .@RID & 65535;
+    set .@card4, .@RID >> 16;
 
-    // Generate the shard.
-	getitem2 .@itemID,1,1,0,0,card1,card2,card3,card4;
+    // Generate the shard.l
+	getitem2 .@itemID,1,1,0,0,.@card1,.@card2,.@card3,.@card4;
+	return;
 }
 
 

@@ -21,15 +21,14 @@ function script CSExperienceHandler {
     function getShardLevel;
     function getOwnerID;
 
-    // "Constants"
-    // TODO: Fix this. Make a logrithmic function for determining exp.
-    set .SS_EXP_TO_LEVEL[4], 100, 100, 100, 100, 100;
-
     // Data definitions
     set .SHARD_ID, getShardID;
     set .SHARD_KEY, getShardKey;
     set .SHARD_LEVEL, getShardLevel;
     set .EQUIP_SLOT, getEquipSlot;
+    
+    // Set the necessary experience.
+    set .EXP_TO_LEVEL, calculateExperience(.SHARD_LEVEL);
     
     // CSExperienceHandler main call.
     storeExperience;
@@ -58,8 +57,22 @@ function script CSExperienceHandler {
             
         // Check if the shard has reached level threshold.
         // If so, provide the player with the next level shard.
-        if(getd("#SS_" + .SHARD_ID + "_" + .SHARD_KEY) >= .SS_EXP_TO_LEVEL[.level - 1])
+        if(getd("#SS_" + .SHARD_ID + "_" + .SHARD_KEY) >= .EXP_TO_LEVEL)
             upgradeShard;
+     
+        return;
+    }
+    
+    
+    
+    /**
+     * Calculates experience based on the shard's level
+     * and the server's rates.
+     * @param shard_level Level of the shard.
+     */
+    function calculateExperience {
+        // Shard level is used to raise the EXP amount.
+        return;
     }
 
 
@@ -86,8 +99,10 @@ function script CSExperienceHandler {
         delitem .SHARD_ID;
         
         // Create and equip the new shard.
-        generateShard(.SHARD_ID + 1, .@playerID, generateKey, .SHARD_LEVEL + 1);
+        createShard(.SHARD_ID + 1, .SHARD_LEVEL + 1);
         equip .SHARD_ID + 1;
+        
+        return;
     }
 
 
@@ -110,7 +125,7 @@ function script CSExperienceHandler {
      */
     function getShardKey {
         set .@equipSlot, getEquipSlot;
-        return (getequipcardid(.@equipSlot, 1) << 16) + getequipcardid(.@equipSlot, 2);
+        return (getequipcardid(.@equipSlot, 2) << 16) + getequipcardid(.@equipSlot, 1);
     }
     
     
@@ -121,7 +136,7 @@ function script CSExperienceHandler {
      */
     function getOwnerID {
         set .@equipSlot, getEquipSlot;
-        return (getequipcardid(.@equipSlot, 3) << 16) + getequipcardid(.@equipSlot, 4);
+        return (getequipcardid(.@equipSlot, 4) << 16) + getequipcardid(.@equipSlot, 3);
     }
 
 
@@ -156,7 +171,7 @@ function script CSExperienceHandler {
      * Returns the last slain mob's experience reward.
      */
     function getMobExperience {
-        return getmonsterinfo(killedrid, MOB_BASEEXP);
+        return getmonsterinfo(killedrid, MOB_BASEEXP); // times difficulty modifier
     }
 }
  
