@@ -100,7 +100,7 @@ function script CSExperienceHandler {
         
         // Create and equip the new shard.
         createShard(.SHARD_ID + 1, .SHARD_LEVEL + 1);
-        equip .SHARD_ID + 1;l
+        equip .SHARD_ID + 1;
         
         return;
     }
