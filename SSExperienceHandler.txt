@@ -1,10 +1,27 @@
 /**
- * This function will provide a crystal with experience points. These
- * points will be used for leveling purposes. In addition to storing
- * experience points, this function will provide a player with the next
- * level shard when the experience threshold is met.
+ * This function will provide a crystal with "essence", a type of experience
+ * point. These points will be used for leveling purposes. In addition to storing
+ * experience points, this function will provide a player with the next level 
+ * shard when the experience threshold is met.
+ * 
+ * hvae the unequip/equip script deal with updating holder info.
  *
  * @param item_id The crystal to receive experience points.
+ * 
+ * WHOA I CAN MAKE THIS SQL FUCKFUCKFUCK
+ 
+ shard_data
+ key, owner_id, holder_id, item_id, level, experience
+ 
+ key is a SHA5 representation of the unique GID
+ owner_id is the original creator's account id
+ holder_id is the holder's account id.
+ item_id is the item id of the shard
+ level is the shard's level
+ experience is the essence amount the shard has.
+ 
+ 
+ 
  *
  * --------------------------------------------------------------------
  */
@@ -24,11 +41,11 @@ function script CSExperienceHandler {
     // Data definitions
     set .SHARD_ID, getShardID;
     set .SHARD_KEY, getShardKey;
-    set .SHARD_LEVEL, getShardLevel;
+    set .SHARD_LEVEL, getShardLevel; // sql
     set .EQUIP_SLOT, getEquipSlot;
     
     // Set the necessary experience.
-    set .EXP_TO_LEVEL, calculateExperience(.SHARD_LEVEL);
+    //set .EXP_TO_LEVEL, calculateExperience(.SHARD_LEVEL);
     
     // CSExperienceHandler main call.
     storeExperience;
@@ -37,29 +54,19 @@ function script CSExperienceHandler {
     // FUNCTIONS
     // ========================================================================
     /**
-     * This function will store experience points gained from slain
-     * mobs into a dynamic variable for later use by the Shard System.
+     * This function will store experience points, known as "quintessence", for
+     * leveling up shards. Calls getExperience to calculate essence. A shard becomes
+     * a crystal when its max level is attained.
      */ 
     function storeExperience {
-        // Local variables
-        set .@playerID, getcharid(0);                       // The attached player.
-        set .@ownerID, getOwnerID;                          // The owner of the shard.
-
-        // If owner and attached player ids do not match,
-        // attach the owner to the script for storing exp.
-        if(.@playerID != .@ownerID)
-            attachrid(.@ownerID);
+        // Store "quintessence" into the field.
+        query_sql("");
         
-        // Store slain mob experience into variable.
-        setd "#SS_" + .SHARD_ID + "_" + .SHARD_KEY,
-            getd("#SS_" + .SHARD_ID + "_" + .SHARD_KEY) + 
-                (getMobExperience);
-            
-        // Check if the shard has reached level threshold.
-        // If so, provide the player with the next level shard.
-        if(getd("#SS_" + .SHARD_ID + "_" + .SHARD_KEY) >= .EXP_TO_LEVEL)
+        // Provide the player with the next level shard if
+        // level threshold is met.
+        if(query_sql("") > .EXP_TO_LEVEL)
             upgradeShard;
-     
+        
         return;
     }
     
@@ -78,30 +85,22 @@ function script CSExperienceHandler {
 
 
     /**
-     * Level up the shard.
+     * Upgrade the shard.
      */
     function upgradeShard {
-        // Redistribute experience. Not implemented yet.
-        //if(getd("#SS_" + .itemID + "_" + .instanceID) > .SS_EXP_TO_LEVEL[.level - 1])
-        //    setd "#SS_" + .itemID + "_" + .instanceID, getd("#SS_" + (.itemID + 1) + "_" + .instanceID) +
-        //        (getd("#SS_" + .itemID + "_" + .instanceID) - .SS_EXP_TO_LEVEL[.@level - 1])
-        
-        // Zero-out the old data.
-        setd "#SS_" + .SHARD_ID + "_" + .SHARD_KEY, 0;
-        
-        // Reattach the player if they were detached.
-        // Not implemented yet.
-        //if(.@playerID != playerattached())
-        //    attachrid(.@playerID);
+        // Update record to reflect new data.
+        // TODO: A query that updates the owner, holder, id
+        //       and level. Probably have createShard handle
+        //       the data update.
+        query_sql("");
         
         // Unequip and delete the old shard.
         unequip .EQUIP_SLOT;
         delitem .SHARD_ID;
         
         // Create and equip the new shard.
-        createShard(.SHARD_ID + 1, .SHARD_LEVEL + 1);
+        createShard(.SHARD_ID + 1, SHARD_LEVEL + 1);
         equip .SHARD_ID + 1;
-        
         return;
     }
 
@@ -170,7 +169,7 @@ function script CSExperienceHandler {
     /**
      * Returns the last slain mob's experience reward.
      */
-    function getMobExperience {
+    function getExperience {
         return getmonsterinfo(killedrid, MOB_BASEEXP); // times difficulty modifier
     }
 }
