@@ -41,7 +41,7 @@ function script CSExperienceHandler {
     // Data definitions
     set .SHARD_ID, getShardID;
     set .SHARD_KEY, getShardKey;
-    set .SHARD_LEVEL, getShardLevel; // sql
+    set .SHARD_LEVEL, getShardLevel; // sql query
     set .EQUIP_SLOT, getEquipSlot;
     
     // Set the necessary experience.
@@ -59,7 +59,7 @@ function script CSExperienceHandler {
      * a crystal when its max level is attained.
      */ 
     function storeExperience {
-        // Store "quintessence" into the field.
+        // Store "quintessence" into the experience field.
         query_sql("");
         
         // Provide the player with the next level shard if
@@ -88,12 +88,6 @@ function script CSExperienceHandler {
      * Upgrade the shard.
      */
     function upgradeShard {
-        // Update record to reflect new data.
-        // TODO: A query that updates the owner, holder, id
-        //       and level. Probably have createShard handle
-        //       the data update.
-        query_sql("");
-        
         // Unequip and delete the old shard.
         unequip .EQUIP_SLOT;
         delitem .SHARD_ID;
