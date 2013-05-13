@@ -6,33 +6,35 @@
  */
 function	script	createShard	{
     // Local variables
-    getarg(0);
-    getarg(1);
+    set .@itemID
 
     if(level > 1) {
-        // Create new shard but update old entry in the database.
-        getitem2 itemid,1,1,0,0,,,,;
+        //
+
+        // Update the database record.
         query_sql("
             UPDATE `shard`
-            SET `item_id` = "+ id +", `level` = "+ level +"
-            WHERE `id` = "+ key +"
+            SET `item_id` = "+ .@id +", `level` = "+ .@level +"
+            WHERE `id` = "+ .@key +"
         ")
     } else {
         // Create a new shard entry in the DB.
         query_sql("
             INSERT INTO `shard` (`creator_id`, `creator_name`, `date_created`, `item_id`)
-            VALUES("+ id +", '"+ name +"', GETDATE(), "+ itemid +")
+            VALUES("+ getchardid(0) +", '"+ strcharinfo(0) +"', GETDATE(), "+ .@itemID +")
         ");
 
         // Grabs the latest entries' id. This is used later for
         // determining the correct shard in scripts.
         query_sql("SELECT MAX(`id`) AS `id` FROM `shard`", .@key);
 
-        // Break the key down into several variables.
-        
+        // Break the key down into several variables
+        // and store them.
+        set .@card3, .@key[0] & 65535;
+        set .@card4, .@key[0] >> 16;
         
         // Provide the player with the shard.
-        getitem2 getarg(0),1,1,0,0,,,,;
+        getitem2 getarg(0),1,1,0,0,,,.@card3,.@card4;
         
     }
 }
