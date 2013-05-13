@@ -1,13 +1,17 @@
 /**
  * Generates a shard from parameters passed.
  * @param itemID The item ID of the shard being created.
- * @param level The level of the shard being created.
+ * @level level 
  * @param key
  */
 function	script	createShard	{
+    // Local variables
+    getarg(0);
+    getarg(1);
+
     if(level > 1) {
         // Create new shard but update old entry in the database.
-        getitem2 itemid,,,,,,,;
+        getitem2 itemid,1,1,0,0,,,,;
         query_sql("
             UPDATE `shard`
             SET `item_id` = "+ id +", `level` = "+ level +"
@@ -15,7 +19,7 @@ function	script	createShard	{
         ")
     } else {
         // Create new shard entry in the database.
-        getitem2 itemid,,,,,,,;
+        getitem2 itemid,1,1,0,0,,,,;
         query_sql("
             INSERT INTO `shard` (`creator_id`, `creator_name`, `date_created`, `item_id`)
             VALUES("+ id +", '"+ name +"', GETDATE(), "+ itemid +")
@@ -31,13 +35,4 @@ function	script	createShard	{
  */
 function	script	determineShard	{
 
-}
-
-
-
-/**
- * Returns the instance ID of the generateKey function.
- */
-function	script	generateKey	{
-    return getnpcid(0, "generateKey");
 }
