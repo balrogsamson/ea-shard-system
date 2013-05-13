@@ -60,25 +60,13 @@ function script CSExperienceHandler {
      */ 
     function storeExperience {
         // Store "quintessence" into the experience field.
-        query_sql("");
+        query_sql(""); // find by key
         
         // Provide the player with the next level shard if
         // level threshold is met.
         if(query_sql("") > .EXP_TO_LEVEL)
             upgradeShard;
         
-        return;
-    }
-    
-    
-    
-    /**
-     * Calculates experience based on the shard's level
-     * and the server's rates.
-     * @param shard_level Level of the shard.
-     */
-    function calculateExperience {
-        // Shard level is used to raise the EXP amount.
         return;
     }
 
@@ -100,11 +88,21 @@ function script CSExperienceHandler {
 
 
 
+    /**
+     * Calculates experience based on the shard's level
+     * and the server's rates.
+     * @param shard_level Level of the shard.
+     */
+    function calculateExperience {
+        // Shard level is used to raise the EXP amount.
+        return;
+    }
+
     // ACCESSOR FUNCTIONS
     // ==================================================
     /**
      * Returns the item_id parameter.
-     * Used to build dynamic variables.
+     * Used to determine the equipped item.
      */
     function getShardID {
         return getarg(0);
@@ -113,21 +111,11 @@ function script CSExperienceHandler {
     
     
     /**
-     * Returns the key associated with the item id.
-     * Stored in the 1st and 2nd card slot.
+     * Returns the database value associated with the shard. This
+     * value is a number between 1 and 65535.
+     * Stored in the 2nd, 3rd and 4th card slot.
      */
-    function getShardKey {
-        set .@equipSlot, getEquipSlot;
-        return (getequipcardid(.@equipSlot, 2) << 16) + getequipcardid(.@equipSlot, 1);
-    }
-    
-    
-    
-    /**
-     * Returns the original owners account ID.
-     * Stored in the 3rd and 4th card slot.
-     */
-    function getOwnerID {
+    function getKey {
         set .@equipSlot, getEquipSlot;
         return (getequipcardid(.@equipSlot, 4) << 16) + getequipcardid(.@equipSlot, 3);
     }
@@ -135,11 +123,10 @@ function script CSExperienceHandler {
 
 
     /**
-     * Returns the Shard level. This is always in the
-     * weapon level field.
+     * Returns the Shard level.
      */
     function getShardLevel {
-        return getiteminfo(.SHARD_ID, 13);
+        return query_sql("");
     }
     
     
@@ -150,6 +137,7 @@ function script CSExperienceHandler {
      * equipment slot.
      */
     function getEquipSlot {
+        // Does not account for duplicates.
         if(getequipid(EQI_ACC_L) == .SHARD_ID)
             set .@equipslot, EQI_ACC_L;
         else
