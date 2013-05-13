@@ -4,25 +4,13 @@
  * experience points, this function will provide a player with the next level 
  * shard when the experience threshold is met.
  * 
- * hvae the unequip/equip script deal with updating holder info.
+ * TODO: hvae the unequip/equip script deal with updating holder info.
  *
  * @param item_id The crystal to receive experience points.
- * 
- * WHOA I CAN MAKE THIS SQL FUCKFUCKFUCK
- 
- shard_data
- key, owner_id, holder_id, item_id, level, experience
- 
- key is a SHA5 representation of the unique GID
- owner_id is the original creator's account id
- holder_id is the holder's account id.
- item_id is the item id of the shard
- level is the shard's level
- experience is the essence amount the shard has.
  
  
  
- *
+ **
  * --------------------------------------------------------------------
  */
 function script CSExperienceHandler {
@@ -62,8 +50,8 @@ function script CSExperienceHandler {
         // Store "quintessence" into the experience field.
         query_sql("
             UPDATE `shard`
-            set `experience` = `experience` + "+  +"
-            WHERE `id` = "+  +"
+            set `experience` = `experience` + "+ getExperience +"
+            WHERE `id` = "+ .SHARD_KEY +"
         ");
         
         // Provide the player with the next level shard if
