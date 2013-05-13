@@ -1,0 +1,11 @@
+// This will be an an NPC that can increase the bonus of your item by following a 
+// pool of riddles then completing a nifty quest. 
+// he will be a shadow but show himself when you answer three riddles correctly.
+
+If shard equipped NPC visible
+
+ask 3 riddles. Completion stays.
+
+riddles complete, collect materials?
+
+Increase shard bonus stats by an amount or maybe instantly level it?
