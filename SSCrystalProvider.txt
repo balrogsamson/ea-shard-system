@@ -6,24 +6,18 @@
 function	script	createShard	{
     // Parameter data.
     set .@itemID, getarg(0);
-    
-    // Card info.
-    set .@GID, generateKey;
-    set .@RID, getcharid(0);
-    
-    // Store RID in card3 and card4.
-    set .@card3, .@RID & 65535;
-    set .@card4, .@RID >> 16;
 
     // Generate the shard.l
 	getitem2 .@itemID,1,1,0,0,.@card1,.@card2,.@card3,.@card4;
 	return;
 	
 	 // Update record to reflect new data.
-        // TODO: A query that updates the owner, holder, id
-        //       and level. Probably have createShard handle
-        //       the data update.
-        query_sql("");
+	 // holder_id, holder_name, level
+     query_sql("
+         UPDATE 'shard_db'
+         SET holder_id= , holder_name='', level=
+         WHERE shard_id=1
+     ");
         
      
      // Create shard record in shard_data table.
