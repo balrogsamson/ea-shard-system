@@ -2,28 +2,25 @@
  * Generates a shard from parameters passed.
  * @param itemID The item ID of the shard being created.
  * @param level The level of the shard being created.
+ * @param key
  */
 function	script	createShard	{
-    // Parameter data.
-    set .@itemID, getarg(0);
-
-    // Generate the shard.l
-	getitem2 .@itemID,1,1,0,0,.@card1,.@card2,.@card3,.@card4;
-	return;
-	
-	 // Update record to reflect new data.
-	 // holder_id, holder_name, level
-     query_sql("
-         UPDATE 'shard_db'
-         SET holder_id= , holder_name='', level=
-         WHERE shard_id=1
-     ");
-        
-     
-     // Create shard record in shard_data table.
-     // key, owner_id, holder_id, item_id, level, experience
-     // Key may end up becoming just the unique incrementing id
-     query_sql("");
+    if(level > 1) {
+        // Create new shard but update old entry in the database.
+        getitem2 itemid,,,,,,,;
+        query_sql("
+            UPDATE `shard`
+            SET `item_id` = "+ id +", `level` = "+ level +"
+            WHERE `id` = "+ key +"
+        ")
+    } else {
+        // Create new shard entry in the database.
+        getitem2 itemid,,,,,,,;
+        query_sql("
+            INSERT INTO `shard` (`creator_id`, `creator_name`, `date_created`, `item_id`)
+            VALUES("+ id +", '"+ name +"', GETDATE(), "+ itemid +")
+        ");
+    }
 }
 
 
