@@ -60,7 +60,11 @@ function script CSExperienceHandler {
      */ 
     function storeExperience {
         // Store "quintessence" into the experience field.
-        query_sql(""); // find by key
+        query_sql("
+            UPDATE `shard`
+            set `experience` = `experience` + "+  +"
+            WHERE `id` = "+  +"
+        ");
         
         // Provide the player with the next level shard if
         // level threshold is met.
@@ -81,8 +85,10 @@ function script CSExperienceHandler {
         delitem .SHARD_ID;
         
         // Create and equip the new shard.
-        createShard(.SHARD_ID + 1, SHARD_LEVEL + 1);
+        createShard(.SHARD_ID + 1, .SHARD_KEY);
         equip .SHARD_ID + 1;
+
+        // End call
         return;
     }
 
