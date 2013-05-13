@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS 'shard' (
+    'shard_id' int(11) unsigned NOT NULL autoincrement,
+    'creator_id' int(11) unsigned NOT NULL,
+    'creator_name' varchar(30),
+    'holder_id' int(11) unsigned NOT NULL,
+    'holder_name' varchar(30)
+);
