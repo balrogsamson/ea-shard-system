@@ -18,12 +18,22 @@ function	script	createShard	{
             WHERE `id` = "+ key +"
         ")
     } else {
-        // Create new shard entry in the database.
-        getitem2 itemid,1,1,0,0,,,,;
+        // Create a new shard entry in the DB.
         query_sql("
             INSERT INTO `shard` (`creator_id`, `creator_name`, `date_created`, `item_id`)
             VALUES("+ id +", '"+ name +"', GETDATE(), "+ itemid +")
         ");
+
+        // Grabs the latest entries' id. This is used later for
+        // determining the correct shard in scripts.
+        query_sql("SELECT MAX(`id`) AS `id` FROM `shard`", .@key);
+
+        // Break the key down into several variables.
+        
+        
+        // Provide the player with the shard.
+        getitem2 getarg(0),1,1,0,0,,,,;
+        
     }
 }
 
