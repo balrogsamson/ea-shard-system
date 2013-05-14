@@ -75,7 +75,7 @@ function script CSExperienceHandler {
         delitem .SHARD_ID;
         
         // Create and equip the new shard.
-        createShard(.SHARD_KEY);
+        SSGenerateShard(.SHARD_ID, .SHARD_KEY);
         equip .SHARD_ID + 1;
 
         return;
