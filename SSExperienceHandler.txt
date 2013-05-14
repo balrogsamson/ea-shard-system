@@ -39,6 +39,7 @@ function script CSExperienceHandler {
     storeExperience;
     return;
 
+
     // FUNCTIONS
     // ========================================================================
     /**
@@ -51,12 +52,13 @@ function script CSExperienceHandler {
         query_sql("
             UPDATE `shard`
             set `experience` = `experience` + "+ getExperience +"
-            WHERE `id` = "+ .SHARD_KEY +"
-        ");
+            WHERE `id` = " + .SHARD_KEY
+        );
         
         // Provide the player with the next level shard if
         // level threshold is met.
-        if(query_sql("") > .EXP_TO_LEVEL)
+        if(query_sql("SELECT `experience` FROM `shard` 
+          WHERE `id` = " + .SHARD_KEY) > .EXP_TO_LEVEL)
             upgradeShard;
         
         return;
@@ -73,7 +75,7 @@ function script CSExperienceHandler {
         delitem .SHARD_ID;
         
         // Create and equip the new shard.
-        createShard(.SHARD_ID + 1, .SHARD_LEVEL + 1, .SHARD_KEY);
+        createShard(.SHARD_KEY);
         equip .SHARD_ID + 1;
 
         return;
@@ -91,6 +93,7 @@ function script CSExperienceHandler {
         return;
     }
 
+
     // ACCESSOR FUNCTIONS
     // ==================================================
     /**
@@ -105,8 +108,8 @@ function script CSExperienceHandler {
     
     /**
      * Returns the database value associated with the shard. This
-     * value is a number between 1 and 65535.
-     * Stored in the 2nd, 3rd and 4th card slot.
+     * value is the size of an int.
+     * Stored in the 3rd and 4th card slot.
      */
     function getKey {
         set .@equipSlot, getEquipSlot;
@@ -119,7 +122,7 @@ function script CSExperienceHandler {
      * Returns the Shard level.
      */
     function getShardLevel {
-        return query_sql("");
+        return getiteminfo(.SHARD_ID, 13);
     }
     
     
