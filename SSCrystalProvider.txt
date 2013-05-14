@@ -9,14 +9,19 @@ function	script	createShard	{
     set .@itemID
 
     if(level > 1) {
-        // 
-
         // Update the database record.
         query_sql("
             UPDATE `shard`
             SET `item_id` = "+ .@id +", `level` = "+ .@level +"
             WHERE `id` = "+ .@key +"
         ")
+
+        // Break the key down.
+        set .@card3, .@key & 65535;
+        set .@card4, .@key >> 16;
+
+        // Provide the player with the shard.
+        getitem2 getarg(0),1,1,0,0,,,.@card3,.@card4;
     } else {
         // Create a new shard entry in the DB.
         query_sql("
@@ -28,7 +33,7 @@ function	script	createShard	{
         // determining the correct shard in scripts.
         query_sql("SELECT MAX(`id`) AS `id` FROM `shard`", .@key);
 
-        // Break the key down into several variables
+        // Break the key down.
         // and store them.
         set .@card3, .@key[0] & 65535;
         set .@card4, .@key[0] >> 16;
