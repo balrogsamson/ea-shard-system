@@ -1,7 +1,6 @@
 /**
  * Generates a shard from parameters passed.
- * @param itemID The item ID of the shard being created.
- * @level level 
+ * @param itemID
  * @param key
  */
 function	script	createShard	{
@@ -12,7 +11,7 @@ function	script	createShard	{
         // Update the database record.
         query_sql("
             UPDATE `shard`
-            SET `item_id` = "+ .@id +", `level` = "+ .@level +"
+            SET `item_id` = `item_id` + 1, `level` = `level` + 1
             WHERE `id` = "+ .@key +"
         ")
 
