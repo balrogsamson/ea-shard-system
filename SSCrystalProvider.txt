@@ -1,27 +1,34 @@
 /**
  * Generates a shard from parameters passed.
- * @param itemID
- * @param key
+ * An empty field means its making a clean shard.
+ * itemid, key makes upgraded shard
  */
-function	script	createShard	{
-    // Local variables
-    set .@itemID
+function	script	SSGenerateShard	{
+    // Function definitions.
+    function createShard;
+    function upgradeShard;
+    
+    // Local variables.
+    set .@shard_id, getarg(0,0);
+    set .@shard_key, getarg(0,1);
 
-    if(level > 1) {
-        // Update the database record.
-        query_sql("
-            UPDATE `shard`
-            SET `item_id` = `item_id` + 1, `level` = `level` + 1
-            WHERE `id` = "+ .@key +"
-        ")
-
-        // Break the key down.
-        set .@card3, .@key & 65535;
-        set .@card4, .@key >> 16;
-
-        // Provide the player with the shard.
-        getitem2 getarg(0),1,1,0,0,,,.@card3,.@card4;
-    } else {
+    // If two parameters are detected, call upgradeShard.
+    // If one parameter is detected, call createShard.
+    if(.@shard_id && .@shard_key)
+       upgradeShard;
+    else if(.@shard_id(0,0))
+       createShard;
+    
+    // Otherwise return.
+    return;
+    
+    
+    
+    
+    /**
+     *
+     */
+    function createShard {
         // Create a new shard entry in the DB.
         query_sql("
             INSERT INTO `shard` (`creator_id`, `creator_name`, `date_created`, `item_id`)
@@ -38,6 +45,28 @@ function	script	createShard	{
         set .@card4, .@key[0] >> 16;
         
         // Provide the player with the shard.
+        getitem2 getarg(0),1,1,0,0,,,.@card3,.@card4;
+        return;
+    }
+    
+    
+    
+    /**
+     *
+     */
+    function upgradeShard {
+        // Update the database record.
+        query_sql("
+            UPDATE `shard`
+            SET `item_id` = `item_id` + 1, `level` = `level` + 1
+            WHERE `id` = "+ .@key +"
+        ")
+
+        // Break the key down.
+        set .@card3, .@key & 65535;
+        set .@card4, .@key >> 16;
+
+        // Provide the player with the new shard.
         getitem2 getarg(0),1,1,0,0,,,.@card3,.@card4;
         return;
     }
