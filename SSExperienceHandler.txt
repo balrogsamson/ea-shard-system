@@ -29,7 +29,7 @@ function script CSExperienceHandler {
     // Data definitions
     set .SHARD_ID, getShardID;
     set .SHARD_KEY, getShardKey;
-    set .SHARD_LEVEL, getShardLevel; // sql query
+    set .SHARD_LEVEL, getShardLevel;
     set .EQUIP_SLOT, getEquipSlot;
     
     // Set the necessary experience.
