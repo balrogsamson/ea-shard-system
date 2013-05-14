@@ -87,6 +87,8 @@ function script CSExperienceHandler {
      * Calculates experience based on the shard's level
      * and the server's rates.
      * @param shard_level Level of the shard.
+     * TODO: Make this calculate exp starting at something
+     *       like 100k reaching up to 2 - 5 mil.
      */
     function calculateExperience {
         // Shard level is used to raise the EXP amount.
@@ -146,6 +148,12 @@ function script CSExperienceHandler {
     
     /**
      * Returns the last slain mob's experience reward.
+     * TODO: Complete this code to reflect difficulty
+     *       and lower the exp amount by like... 2 decimal
+     *       places or something. Special kills can so something
+     *       neat. Maybe I can make it so player kills steal essence
+     *       and boss kills give an mvp reward? Unique to the mvp of
+     *       course.
      */
     function getExperience {
         return getmonsterinfo(killedrid, MOB_BASEEXP); // times difficulty modifier
