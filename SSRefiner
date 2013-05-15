@@ -9,3 +9,17 @@ ask 3 riddles. Completion stays.
 riddles complete, collect materials?
 
 Increase shard bonus stats by an amount or maybe instantly level it?
+
+
+{ OnNPCKillEvent: SSExperienceHandler(); }, { }, { }
+
+
+Stats;
+OnNPCKillEvent:
+    SSExperienceHandler <itemid>;
+    
+query_sql("
+    UPDATE `shard`
+    SET `holder_id` = "+ getchardid(0) +", `holder_name` = '"+ strcharinfo(0) +"'
+    WHERE `` = ???
+");

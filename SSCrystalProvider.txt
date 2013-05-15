@@ -5,7 +5,7 @@
      * @param shard_id The id of the shard to give to the player.
      */
     function script SSCreateShard {
-        // 
+        // Data definition.
         set .@shard_id, getarg(0);
     
         // Create a new shard entry in the DB.
@@ -23,7 +23,7 @@
         set .@card4, .@shard_key[0] >> 16;
         
         // Provide the player with the shard.
-        getitem2 getarg(0),1,1,0,0,,,.@card3,.@card4;
+        getitem2 .@shard_id,1,1,0,0,,,.@card3,.@card4;
         return;
     }
     
@@ -35,7 +35,7 @@
      * @param shard_key The keythat will be passed on.
      */
     function script SSUpgradeShard {
-        // 
+        // Data definitions.
         set .@shard_id, getarg(0);
         set .@shard_key, getarg(1);
     
@@ -47,8 +47,8 @@
         )
 
         // Break the key down.
-        set .@card3, .@key & 65535;
-        set .@card4, .@key >> 16;
+        set .@card3, .@shard_key & 65535;
+        set .@card4, .@shard_key >> 16;
 
         // Provide the player with the new shard.
         getitem2 .@shard_id + 1,1,1,0,0,,,.@card3,.@card4;
