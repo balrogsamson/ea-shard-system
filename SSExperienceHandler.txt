@@ -13,7 +13,7 @@
  **
  * --------------------------------------------------------------------
  */
-function script CSExperienceHandler {
+function script SSExperienceHandler {
     // Player-related function declarations.
     function storeExperience;
     function upgradeShard;
@@ -27,10 +27,10 @@ function script CSExperienceHandler {
     function getOwnerID;
 
     // Data definitions
-    set .SHARD_ID, getShardID;
-    set .SHARD_KEY, getShardKey;
-    set .SHARD_LEVEL, getShardLevel;
-    set .EQUIP_SLOT, getEquipSlot;
+    set .@SHARD_ID, getShardID;
+    set .@SHARD_KEY, getShardKey;
+    set .@SHARD_LEVEL, getShardLevel;
+    set .@EQUIP_SLOT, getEquipSlot;
     
     // Set the necessary experience.
     //set .EXP_TO_LEVEL, calculateExperience(.SHARD_LEVEL);
@@ -52,13 +52,13 @@ function script CSExperienceHandler {
         query_sql("
             UPDATE `shard`
             set `experience` = `experience` + "+ getExperience +"
-            WHERE `id` = " + .SHARD_KEY
+            WHERE `id` = " + .@SHARD_KEY
         );
         
         // Provide the player with the next level shard if
         // level threshold is met.
         if(query_sql("SELECT `experience` FROM `shard` 
-          WHERE `id` = " + .SHARD_KEY) > .EXP_TO_LEVEL)
+          WHERE `id` = " + .@SHARD_KEY) > .EXP_TO_LEVEL)
             upgradeShard;
         
         return;
@@ -71,12 +71,12 @@ function script CSExperienceHandler {
      */
     function upgradeShard {
         // Unequip and delete the old shard.
-        unequip .EQUIP_SLOT;
-        delitem .SHARD_ID;
+        unequip .@EQUIP_SLOT;
+        delitem .@SHARD_ID;
         
         // Create and equip the new shard.
-        SSGenerateShard(.SHARD_ID, .SHARD_KEY);
-        equip .SHARD_ID + 1;
+        SSUpgradeShard(.@SHARD_ID, .@SHARD_KEY);
+        equip .@SHARD_ID + 1;
 
         return;
     }
