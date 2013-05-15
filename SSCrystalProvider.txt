@@ -1,34 +1,13 @@
-/**
- * Generates a shard from parameters passed.
- * An empty field means its making a clean shard.
- * itemid, key makes upgraded shard
- */
-function	script	SSGenerateShard	{
-    // Function definitions.
-    function createShard;
-    function upgradeShard;
-    
-    // Local variables.
-    set .@shard_id, getarg(0,0);
-    set .@shard_key, getarg(0,1);
 
-    // If two parameters are detected, call upgradeShard.
-    // If one parameter is detected, call createShard.
-    if(.@shard_id && .@shard_key)
-       upgradeShard;
-    else if(.@shard_id(0,0))
-       createShard;
-    
-    // Otherwise return.
-    return;
-    
-    
-    
-    
     /**
-     *
+     * Creates a new shard. This function is used to setup a
+     * new shard with a database entry and store its key.
+     * @param shard_id The id of the shard to give to the player.
      */
-    function createShard {
+    function script SSCreateShard {
+        // 
+        set .@shard_id, getarg(0);
+    
         // Create a new shard entry in the DB.
         query_sql("
             INSERT INTO `shard` (`creator_id`, `creator_name`, `date_created`, `item_id`)
@@ -37,12 +16,11 @@ function	script	SSGenerateShard	{
 
         // Grabs the latest entries' id. This is used later for
         // determining the correct shard in scripts.
-        query_sql("SELECT MAX(`id`) AS `id` FROM `shard`", .@key);
+        query_sql("SELECT MAX(`id`) AS `id` FROM `shard`", .@shard_key);
 
-        // Break the key down.
-        // and store them.
-        set .@card3, .@key[0] & 65535;
-        set .@card4, .@key[0] >> 16;
+        // Break the key down and store it.
+        set .@card3, .@shard_key[0] & 65535;
+        set .@card4, .@shard_key[0] >> 16;
         
         // Provide the player with the shard.
         getitem2 getarg(0),1,1,0,0,,,.@card3,.@card4;
@@ -52,25 +30,30 @@ function	script	SSGenerateShard	{
     
     
     /**
-     *
+     * Upgrades an existing shard.
+     * @param shard_id The id of the shard being upgraded.
+     * @param shard_key The keythat will be passed on.
      */
-    function upgradeShard {
+    function script SSUpgradeShard {
+        // 
+        set .@shard_id, getarg(0);
+        set .@shard_key, getarg(1);
+    
         // Update the database record.
         query_sql("
             UPDATE `shard`
             SET `item_id` = `item_id` + 1, `level` = `level` + 1
-            WHERE `id` = "+ .@key +"
-        ")
+            WHERE `id` = " + .@shard_key
+        )
 
         // Break the key down.
         set .@card3, .@key & 65535;
         set .@card4, .@key >> 16;
 
         // Provide the player with the new shard.
-        getitem2 getarg(0),1,1,0,0,,,.@card3,.@card4;
+        getitem2 .@shard_id + 1,1,1,0,0,,,.@card3,.@card4;
         return;
     }
-}
 
 
 
