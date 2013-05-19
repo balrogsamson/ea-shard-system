@@ -20,7 +20,7 @@ function script SSCreateShard {
 
     // Break the key down and store it.
     .@card3 = .@shard_key[0] & 65535;
-    .@card4, .@shard_key[0] >> 16;
+    .@card4 = .@shard_key[0] >> 16;
         
     // Provide the player with the shard.
     getitem2 .@shard_id,1,1,0,0,,,.@card3,.@card4;
