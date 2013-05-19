@@ -14,33 +14,29 @@
  * --------------------------------------------------------------------
  */
 function script SSExperienceHandler {
-    // Player-related function declarations.
-    function storeExperience;
-    function upgradeShard;
-    function getEquipSlot;
-    function getMobExperience;
-    
-    // Shard-related function declarations.
+    // Function declarations.
     function getShardID;
     function getShardKey;
     function getShardLevel;
-    function getOwnerID;
+    function storeExperience;
+    function getEquipSlot;
+    function getExperience;
+    function getNextLevel;
+    function upgradeShard;
 
     // Data definitions
     .@SHARD_ID = getShardID;
     .@SHARD_KEY = getShardKey;
     .@SHARD_LEVEL = getShardLevel;
     .@EQUIP_SLOT = getEquipSlot;
+    .@NEXT_LEVEL = getNextLevel(.@SHARD_LEVEL);
     
-    // Set the necessary experience.
-    //set .EXP_TO_LEVEL, calculateExperience(.SHARD_LEVEL);
-    
-    // CSExperienceHandler main call.
+    // "Main" function call.
     storeExperience;
     return;
 
 
-    // FUNCTIONS
+    // MAIN FUNCTIONS
     // ========================================================================
     /**
      * This function will store experience points, known as "quintessence", for
@@ -51,14 +47,14 @@ function script SSExperienceHandler {
         // Store "quintessence" into the experience field.
         query_sql("
             UPDATE `shard`
-            set `experience` = `experience` + "+ getExperience +"
+            SET `experience` = `experience` + "+ getExperience +"
             WHERE `id` = " + .@SHARD_KEY
         );
         
         // Provide the player with the next level shard if
         // level threshold is met.
         if(query_sql("SELECT `experience` FROM `shard` 
-          WHERE `id` = " + .@SHARD_KEY) > .EXP_TO_LEVEL)
+          WHERE `id` = " + .@SHARD_KEY) > .@NEXT_LEVEL)
             upgradeShard;
         
         return;
@@ -77,7 +73,6 @@ function script SSExperienceHandler {
         // Create and equip the new shard.
         SSUpgradeShard(.@SHARD_ID, .@SHARD_KEY);
         equip .@SHARD_ID + 1;
-
         return;
     }
 
@@ -90,10 +85,11 @@ function script SSExperienceHandler {
      * TODO: Make this calculate exp starting at something
      *       like 100k reaching up to 2 - 5 mil.
      */
-    function calculateExperience {
+    function getNextLevel {
         // Shard level is used to raise the EXP amount.
-        return;
+        return 1;
     }
+
 
 
     // ACCESSOR FUNCTIONS
@@ -136,13 +132,11 @@ function script SSExperienceHandler {
      */
     function getEquipSlot {
         // Does not account for duplicates.
-        if(getequipid(EQI_ACC_L) == .SHARD_ID)
-            set .@equipslot, EQI_ACC_L;
+        if(getequipid(EQI_ACC_L) == .@SHARD_ID)
+            return EQI_ACC_L;
         else
-            set .@equipslot, EQI_ACC_R;
-
-        return .@equipslot;
-    }   
+            return EQI_ACC_R;
+    }
     
     
     
