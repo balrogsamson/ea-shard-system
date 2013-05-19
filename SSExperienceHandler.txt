@@ -109,7 +109,7 @@ function script SSExperienceHandler {
      * value is the size of an int.
      * Stored in the 3rd and 4th card slot.
      */
-    function getKey {
+    function getShardKey {
         .@equipSlot = getEquipSlot;
         return (getequipcardid(.@equipSlot, 4) << 16) + getequipcardid(.@equipSlot, 3);
     }
