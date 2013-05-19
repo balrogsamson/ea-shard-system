@@ -25,15 +25,26 @@ function  script  SS_UpdateHolder {
     function getShardID;
     function getShardKey;
     function isEquipped;
+    function updateRecord;
 
-    // 
+    // Data definitions.
     .@SHARD_ID = getShardID;
     .@SHARD_KEY = getShardKey;
     .@EQUIPPED = isEquipped;
     
-    // Update records so the player equipping the shard
-    // is stored into the database. Name and ID will be
-    // stored.
+    // --- MAIN CODE ---
+    
+    
+    // Update the shard's record with the attached player's
+    // account id and player name within the `holder_id` and
+    // `holder_name` fields.
+    query_sql("
+        UPDATE `shard`
+        SET `holder_id` = "+ getcharid(0) +", `holder_name` = '"+ strcharinfo(0) +"'
+        WHERE `id` = " + .@SHARD_KEY
+    );
+
+    return;
     
     
 }
