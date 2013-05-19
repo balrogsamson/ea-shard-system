@@ -12,3 +12,28 @@ Increase shard bonus stats by an amount or maybe instantly level it?
 
 
 { OnNPCKillEvent: SSExperienceHandler(); }, {  }, { }
+
+
+
+
+/**
+ * @param item_id An integer value indicating the item.
+ * @param equip A boolean that indicated whether the item was equipped or unequipped.
+ */
+function  script  SS_UpdateHolder {
+    // Function declarations.
+    function getShardID;
+    function getShardKey;
+    function isEquipped;
+
+    // 
+    .@SHARD_ID = getShardID;
+    .@SHARD_KEY = getShardKey;
+    .@EQUIPPED = isEquipped;
+    
+    // Update records so the player equipping the shard
+    // is stored into the database. Name and ID will be
+    // stored.
+    
+    
+}
