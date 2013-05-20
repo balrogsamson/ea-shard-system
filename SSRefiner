@@ -17,6 +17,8 @@ Increase shard bonus stats by an amount or maybe instantly level it?
 
 
 /**
+ * Each time a shard is equipped update the `holder_id` and
+ * `holder_name` 
  * @param item_id An integer value indicating the item.
  */
 function  script  SS_UpdateHolder {
@@ -28,26 +30,43 @@ function  script  SS_UpdateHolder {
     .@SHARD_ID = getShardID;
     .@SHARD_KEY = getShardKey;
     
-    // --- MAIN() ---
-    
-    
-    
-    
-    // FUNCTIONS
-    // ================================================================================
-    
-    
-    
-    // Update the shard's record with the attached player's
-    // account id and player name within the `holder_id` and
-    // `holder_name` fields.
+    // --- MAIN CALL
+    // Update the `holder_id` and `holder_name` fields
+    // with attached player data.
     query_sql("
         UPDATE `shard`
-        SET `holder_id` = 
-        WHERE `holder_id`
+        SET `holder_id` = "+ getchardid(0) +", `holder_name` = '"+ strcharid(0) +"'
+        WHERE `id` = " + .@SHARD_KEY
     );
-    // If holder id isn't equal to owner id, update
     return;
     
     
+    
+    // MAIN FUNCTIONS
+    // ================================================================================
+    /**
+     * Returns the item_id parameter.
+     */
+    function getShardID {
+        return getarg(0);
+    }
+
+
+
+    /**
+     * Checks the attached player's equipment for the
+     * parameter item_id. If it is found, returns the
+     * equipment slot then returns the stored id.
+     */
+    function getShardKey {
+        // Obtain the equip slot.
+        if(getequipid(EQI_ACC_L) == .@SHARD_ID)
+            .@equipSlot = EQI_ACC_L;
+        else
+            .@equipSlot = EQI_ACC_R;
+
+        // Return the shard key.
+        .@shard_key = (getequipcardid(.@equipSlot, 4) << 16) + getequipcardid(.@equipSlot, 3));
+        return .@shard_key;
+    }
 }
