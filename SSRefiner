@@ -18,21 +18,24 @@ Increase shard bonus stats by an amount or maybe instantly level it?
 
 /**
  * @param item_id An integer value indicating the item.
- * @param equip A boolean that indicated whether the item was equipped or unequipped.
  */
 function  script  SS_UpdateHolder {
     // Function declarations.
     function getShardID;
     function getShardKey;
-    function isEquipped;
-    function updateRecord;
 
     // Data definitions.
     .@SHARD_ID = getShardID;
     .@SHARD_KEY = getShardKey;
-    .@EQUIPPED = isEquipped;
     
-    // --- MAIN CODE ---
+    // --- MAIN() ---
+    
+    
+    
+    
+    // FUNCTIONS
+    // ================================================================================
+    
     
     
     // Update the shard's record with the attached player's
@@ -40,10 +43,10 @@ function  script  SS_UpdateHolder {
     // `holder_name` fields.
     query_sql("
         UPDATE `shard`
-        SET `holder_id` = "+ getcharid(0) +", `holder_name` = '"+ strcharinfo(0) +"'
-        WHERE `id` = " + .@SHARD_KEY
+        SET `holder_id` = 
+        WHERE `holder_id`
     );
-
+    // If holder id isn't equal to owner id, update
     return;
     
     
