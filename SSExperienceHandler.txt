@@ -31,7 +31,7 @@ function script SSExperienceHandler {
     .@EQUIP_SLOT = getEquipSlot;
     .@NEXT_LEVEL = getNextLevel(.@SHARD_LEVEL);
     
-    // "Main" function call.
+    // --- MAIN CALL
     storeExperience;
     return;
 
