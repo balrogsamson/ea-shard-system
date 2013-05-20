@@ -1,24 +1,7 @@
-// This will be an an NPC that can increase the bonus of your item by following a 
-// pool of riddles then completing a nifty quest. 
-// he will be a shadow but show himself when you answer three riddles correctly.
-
-If shard equipped NPC visible
-
-ask 3 riddles. Completion stays.
-
-riddles complete, collect materials?
-
-Increase shard bonus stats by an amount or maybe instantly level it?
-
-
-{ OnNPCKillEvent: SSExperienceHandler(); }, {  }, { }
-
-
-
-
 /**
- * Each time a shard is equipped update the `holder_id` and
- * `holder_name` 
+ * This code goes into the 'OnEquipScript' area of the shard item
+ * code. This function will update the holder (the person in possession
+ * of the shard) each time the shard is equipped. 
  * @param item_id An integer value indicating the item.
  */
 function  script  SS_UpdateHolder {
