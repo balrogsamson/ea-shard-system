@@ -4,7 +4,7 @@
  *
  * @param shard_id The id of the shard to give to the player.
  */
-function script SSCreateShard {
+function script SS_CreateShard {
     // Data definition.
     .@shard_id = getarg(0);
     
@@ -34,7 +34,7 @@ function script SSCreateShard {
  * @param shard_id The id of the shard being upgraded.
  * @param shard_key The keythat will be passed on.
  */
-function script SSUpgradeShard {
+function script SS_UpgradeShard {
     // Data definitions.
     .@shard_id = getarg(0);
     .@shard_key = getarg(1);
@@ -65,6 +65,6 @@ function script SSUpgradeShard {
  *
  * @return shard_id Returns the ID number of the shard.
  */
-function	script	SSDetermineShard	{
+function	script	SS_DetermineShard	{
 
 }
