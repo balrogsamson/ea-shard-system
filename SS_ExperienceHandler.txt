@@ -110,8 +110,7 @@ function script SS_ExperienceHandler {
      * Stored in the 3rd and 4th card slot.
      */
     function getShardKey {
-        .@equipSlot = getEquipSlot;
-        return (getequipcardid(.@equipSlot, 4) << 16) + getequipcardid(.@equipSlot, 3);
+        return (getequipcardid(.@EQUIP_SLOT, 4) << 16) + getequipcardid(.@EQUIP_SLOT, 3);
     }
 
 
