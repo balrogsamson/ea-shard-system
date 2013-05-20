@@ -16,6 +16,7 @@ function  script  SS_UpdateHolder {
     // --- MAIN CALL
     // Update the `holder_id` and `holder_name` fields
     // with attached player data.
+    // TODO: Condition that ensures its not called ALL the time.
     query_sql("
         UPDATE `shard`
         SET `holder_id` = "+ getchardid(0) +", `holder_name` = '"+ strcharid(0) +"'
