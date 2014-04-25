@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS 'shard' (
 --
 CREATE TABLE IF NOT EXISTS 'shard_log' (
     'completion_date' datetime NOT NULL default '0000-00-00 00:00:00',
-    'completion_time' int(11) unsigned NOT NULL default '0',
     'char_id' int(11) unsigned NOT NULL default '0',
     'char_name' varchar(30) NOT NULL default '',
     'item_id' int(11) NOT NULL default '0'
