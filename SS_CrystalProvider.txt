@@ -1,17 +1,17 @@
 /**
  * Creates a new shard. This function is used to setup a
  * new shard with a database entry and store its key.
- *
  * @param shard_id The id of the shard to give to the player.
+ * Ex. SS_CreateShard(11564);
  */
-function script SS_CreateShard {
+function    script  SS_CreateShard {
     // Data definition.
     .@shard_id = getarg(0);
     
     // Create a new shard entry in the DB.
     query_sql("
         INSERT INTO `shard` (`creator_id`, `creator_name`, `date_created`, `item_id`)
-        VALUES("+ getchardid(0) +", '"+ strcharinfo(0) +"', GETDATE(), "+ .@itemID +")
+        VALUES("+ getchardid(0) +", '"+ strcharinfo(0) +"', GETDATE(), "+ .@shard_id +")
     ");
 
     // Grabs the latest entries' id. This is used later for
@@ -21,23 +21,23 @@ function script SS_CreateShard {
     // Break the key down and store it.
     .@card3 = .@shard_key[0] & 65535;
     .@card4 = .@shard_key[0] >> 16;
-        
+
     // Provide the player with the shard.
     getitem2 .@shard_id,1,1,0,0,,,.@card3,.@card4;
     return;
 }
-    
-    
-    
+
+
+
 /**
  * Upgrades an existing shard.
  * @param shard_id The id of the shard being upgraded.
- * @param shard_key The keythat will be passed on.
+ * Ex. SS_UpgradeShard(11564);
  */
-function script SS_UpgradeShard {
+function    script  SS_UpgradeShard {
     // Data definitions.
     .@shard_id = getarg(0);
-    .@shard_key = getarg(1);
+    .@shard_key = SS_RebuildKey(.@shard_id);
 
     // Update the database record.
     query_sql("
@@ -58,11 +58,19 @@ function script SS_UpgradeShard {
 
 
 /**
+ * 
+ */
+function    script  SS_RebuildKey {
+
+}
+
+
+
+/**
  * Based on multiple variables (i.e. player is in a guild, HP amount,
  * player has reached a certain amount of money, etc.) this script will
  * determine the Shard the player shall randomly recieve. As the player
  * progresses through the game the pool of possible items will increase.
- *
  * @return shard_id Returns the ID number of the shard.
  */
 function	script	SS_DetermineShard	{
