@@ -7,17 +7,17 @@
  * TODO: hvae the unequip/equip script deal with updating holder info.
  *
  * @param item_id The crystal to receive experience points.
- * Ex. {},{},{ ... SS_ExperienceHandler(21135); }
+ * Ex. {},{},{ ... SS_StoreExperience(21135); }
  */
  
  
  **
  * --------------------------------------------------------------------
  */
-function script SS_ExperienceHandler {
+function script SS_StoreExperience {
     // Local function declarations.
     function getShardID;
-    function getShardKey;
+    function getShardPKey;
     function getShardLevel;
     function storeExperience;
     function getEquipSlot;
@@ -27,7 +27,7 @@ function script SS_ExperienceHandler {
 
     // Data definitions
     .@SHARD_ID = getShardID;
-    .@SHARD_KEY = getShardKey;
+    .@SHARD_PKEY = getShardPKey;
     .@SHARD_LEVEL = getShardLevel;
     .@NEXT_LEVEL = getNextLevel(.@SHARD_LEVEL);
     .@EQUIP_SLOT = getEquipSlot;
@@ -44,7 +44,7 @@ function script SS_ExperienceHandler {
      * leveling up shards. Calls getExperience to calculate essence. A shard becomes
      * a crystal when its max level is attained.
      */ 
-    function storeExperience {
+    function storeExperience {
         // Store "quintessence" into the experience field.
         query_sql("
             UPDATE `shard`
