@@ -18,9 +18,9 @@ function    script  SS_CreateShard {
     // determining the correct shard in scripts.
     query_sql("SELECT MAX(`id`) AS `id` FROM `shard`", .@shard_key);
 
-    // Break the key down and store it.
-    .@card3 = .@shard_key[0] & 65535;
-    .@card4 = .@shard_key[0] >> 16;
+    // Segment the 32-bit primary key.
+    .@card3 = .@shard_pkey[0] & 65535;
+    .@card4 = .@shard_pkey[0] >> 16;
 
     // Provide the player with the shard.
     getitem2 .@shard_id,1,1,0,0,,,.@card3,.@card4;
@@ -32,36 +32,26 @@ function    script  SS_CreateShard {
 /**
  * Upgrades an existing shard.
  * @param shard_id The id of the shard being upgraded.
- * Ex. SS_UpgradeShard(11564);
- */
+ * Ex. SS_UpgradeShard(11564, 1);
 function    script  SS_UpgradeShard {
     // Data definitions.
     .@shard_id = getarg(0);
-    .@shard_key = SS_RebuildKey(.@shard_id);
+    .@shard_pkey = getarg(1);
 
     // Update the database record.
     query_sql("
         UPDATE `shard`
         SET `item_id` = `item_id` + 1, `level` = `level` + 1
-        WHERE `id` = " + .@shard_key
-    )
+        WHERE `id` = " + .@shard_pkey
+    ")
 
-    // Break the key down.
+    // Re-segment the primary key.
     .@card3 = .@shard_key & 65535;
     .@card4 = .@shard_key >> 16;
 
     // Provide the player with the new shard.
-    getitem2 .@shard_id + 1,1,1,0,0,,,.@card3,.@card4;
+    getitem2 .@shard_id,1,1,1,0,0,,,.@card3,.@card4;
     return;
-}
-
-
-
-/**
- * 
- */
-function    script  SS_RebuildKey {
-
 }
 
 
