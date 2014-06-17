@@ -17,7 +17,7 @@
 function script SS_StoreExperience {
     // Local function declarations.
     function getShardID;
-    function getShardPKey;
+    function getPrimaryKey;
     function getShardLevel;
     function storeExperience;
     function getEquipSlot;
@@ -27,7 +27,7 @@ function script SS_StoreExperience {
 
     // Data definitions
     .@SHARD_ID = getShardID;
-    .@SHARD_PKEY = getShardPKey;
+    .@SHARD_PKEY = getPrimaryKey;
     .@SHARD_LEVEL = getShardLevel;
     .@NEXT_LEVEL = getNextLevel(.@SHARD_LEVEL);
     .@EQUIP_SLOT = getEquipSlot;
@@ -69,7 +69,7 @@ function script SS_StoreExperience {
         delitem .@SHARD_ID;
         
         // Create and equip the new shard.
-        SS_UpgradeShard(.@SHARD_ID, .@SHARD_KEY);
+        SS_UpgradeShard(.@SHARD_ID, .@SHARD_PKEY);
         equip .@SHARD_ID + 1;
         return;
     }
@@ -97,10 +97,9 @@ function script SS_StoreExperience {
     }
     
     /**
-     * Returns the database value associated with the shard. This value is 16 bits.
-     * Stored in the 3rd and 4th card slot.
+     * Returns the 32-bit primary key.
      */
-    function getShardKey {
+    function getPrimaryKey {
         return (getequipcardid(.@EQUIP_SLOT, 4) << 16) + getequipcardid(.@EQUIP_SLOT, 3);
     }
 
