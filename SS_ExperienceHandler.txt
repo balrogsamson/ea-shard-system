@@ -7,14 +7,15 @@
  * TODO: hvae the unequip/equip script deal with updating holder info.
  *
  * @param item_id The crystal to receive experience points.
- 
+ * Ex. {},{},{ ... SS_ExperienceHandler(21135); }
+ */
  
  
  **
  * --------------------------------------------------------------------
  */
 function script SS_ExperienceHandler {
-    // Function declarations.
+    // Local function declarations.
     function getShardID;
     function getShardKey;
     function getShardLevel;
@@ -28,10 +29,10 @@ function script SS_ExperienceHandler {
     .@SHARD_ID = getShardID;
     .@SHARD_KEY = getShardKey;
     .@SHARD_LEVEL = getShardLevel;
-    .@EQUIP_SLOT = getEquipSlot;
     .@NEXT_LEVEL = getNextLevel(.@SHARD_LEVEL);
+    .@EQUIP_SLOT = getEquipSlot;
     
-    // --- MAIN CALL
+    // MAIN CALL
     storeExperience;
     return;
 
@@ -49,15 +50,14 @@ function script SS_ExperienceHandler {
             UPDATE `shard`
             SET `experience` = `experience` + "+ getExperience +"
             WHERE `id` = " + .@SHARD_KEY
-        );
+        ");
         
-        // Provide the player with the next level shard if
-        // level threshold is met.
-        if(query_sql("SELECT `experience` FROM `shard` 
-          WHERE `id` = " + .@SHARD_KEY) > .@NEXT_LEVEL)
+        // Provide the player with the next level shard if level threshold is met.
+        if(query_sql("SELECT `experience` FROM `shard` WHERE `id` = " + .@SHARD_KEY) > .@NEXT_LEVEL)
             upgradeShard;
         
-        return;
+        // Success
+        return 0;
     }
 
     /**
@@ -69,7 +69,7 @@ function script SS_ExperienceHandler {
         delitem .@SHARD_ID;
         
         // Create and equip the new shard.
-        SSUpgradeShard(.@SHARD_ID, .@SHARD_KEY);
+        SS_UpgradeShard(.@SHARD_ID, .@SHARD_KEY);
         equip .@SHARD_ID + 1;
         return;
     }
@@ -97,8 +97,7 @@ function script SS_ExperienceHandler {
     }
     
     /**
-     * Returns the database value associated with the shard. This
-     * value is the size of an int.
+     * Returns the database value associated with the shard. This value is 16 bits.
      * Stored in the 3rd and 4th card slot.
      */
     function getShardKey {
