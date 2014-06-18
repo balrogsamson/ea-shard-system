@@ -43,7 +43,7 @@ function script SS_StoreExperience {
      * This function will store experience points, known as "quintessence", for
      * leveling up shards. Calls getExperience to calculate essence. A shard becomes
      * a crystal when its max level is attained.
-     */ 
+     */
     function storeExperience {
         // Store "quintessence" into the experience field.
         query_sql("
@@ -100,7 +100,7 @@ function script SS_StoreExperience {
      * Returns the 32-bit primary key.
      */
     function getPrimaryKey {
-        return (getequipcardid(.@EQUIP_SLOT, 4) << 16) + getequipcardid(.@EQUIP_SLOT, 3);
+        return (getequipcardid(.@EQUIP_SLOT, 3) << 16) + getequipcardid(.@EQUIP_SLOT, 4);
     }
 
     /**
