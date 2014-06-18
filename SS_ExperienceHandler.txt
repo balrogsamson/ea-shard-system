@@ -7,7 +7,7 @@
  * TODO: hvae the unequip/equip script deal with updating holder info.
  *
  * @param item_id The crystal to receive experience points.
- * Ex. {},{},{ ... SS_StoreExperience(21135); }
+ * Ex. {},{},{ NPCKillEvent: SS_StoreExperience(21135); }
  */
  
  
