@@ -7,34 +7,33 @@
  * TODO: hvae the unequip/equip script deal with updating holder info.
  *
  * @param item_id The crystal to receive experience points.
- * Ex. {},{},{ NPCKillEvent: SS_StoreExperience(21135); }
+ * Ex. {},{},{ NPCKillEvent: SS_ExperienceHandler(21135); }
  */
  
  
  **
  * --------------------------------------------------------------------
  */
-function script SS_StoreExperience {
+function script SS_ExperienceHandler {
     // Local function declarations.
+    function storeExperience;
+    function upgradeShard;
     function getShardID;
     function getPrimaryKey;
     function getShardLevel;
-    function storeExperience;
     function getEquipSlot;
     function getExperience;
-    function getNextLevel;
-    function upgradeShard;
 
     // Data definitions
     .@SHARD_ID = getShardID;
     .@SHARD_PKEY = getPrimaryKey;
     .@SHARD_LEVEL = getShardLevel;
-    .@NEXT_LEVEL = getNextLevel(.@SHARD_LEVEL);
     .@EQUIP_SLOT = getEquipSlot;
-    
+
     // MAIN CALL
     storeExperience;
     return;
+
 
 
     // MAIN FUNCTIONS
@@ -53,7 +52,7 @@ function script SS_StoreExperience {
         ");
         
         // Provide the player with the next level shard if level threshold is met.
-        if(query_sql("SELECT `experience` FROM `shard` WHERE `id` = " + .@SHARD_KEY) > .@NEXT_LEVEL)
+        if(query_sql("SELECT `experience` FROM `shard` WHERE `id` = " + .@SHARD_KEY) > $SS_NEXT_LEVEL)
             upgradeShard;
         
         // Success
@@ -72,18 +71,6 @@ function script SS_StoreExperience {
         SS_UpgradeShard(.@SHARD_ID, .@SHARD_PKEY);
         equip .@SHARD_ID + 1;
         return;
-    }
-
-    /**
-     * Calculates experience based on the shard's level
-     * and the server's rates.
-     * @param shard_level Level of the shard.
-     * TODO: Make this calculate exp starting at something
-     *       like 100k reaching up to 2 - 5 mil.
-     */
-    function getNextLevel {
-        // Shard level is used to raise the EXP amount.
-        return 1;
     }
 
     // ACCESSOR FUNCTIONS
@@ -124,16 +111,12 @@ function script SS_StoreExperience {
     }
     
     /**
-     * Returns the last slain mob's experience reward.
-     * TODO: Complete this code to reflect difficulty
-     *       and lower the exp amount by like... 2 decimal
-     *       places or something. Special kills can so something
-     *       neat. Maybe I can make it so player kills steal essence
-     *       and boss kills give an mvp reward? Unique to the mvp of
-     *       course.
+     * Returns the last slain mob's experience. This value is modified by
+     * $SS_EXPERIENCE_SHARE in settings.conf
      */
     function getExperience {
-        return getmonsterinfo(killedrid, MOB_BASEEXP); // times difficulty modifier
+        .@MOB_EXPERIENCE = getmonsterinfo(killedrid, MOB_BASEEXP);
+        return .@MOB_EXPERIENCE = (.@MOB_EXPERIENCE * $SS_EXPERIENCE_SHARE) / 100;
     }
 }
  
