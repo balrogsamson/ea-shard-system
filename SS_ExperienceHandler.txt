@@ -50,11 +50,11 @@ function script SS_ExperienceHandler {
             SET `experience` = `experience` + "+ getExperience +"
             WHERE `id` = " + .@SHARD_KEY
         ");
-        
+
         // Provide the player with the next level shard if level threshold is met.
         if(query_sql("SELECT `experience` FROM `shard` WHERE `id` = " + .@SHARD_KEY) > $SS_NEXT_LEVEL)
             upgradeShard;
-        
+
         // Success
         return 0;
     }
@@ -66,7 +66,7 @@ function script SS_ExperienceHandler {
         // Unequip and delete the old shard.
         unequip .@EQUIP_SLOT;
         delitem .@SHARD_ID;
-        
+
         // Create and equip the new shard.
         SS_UpgradeShard(.@SHARD_ID, .@SHARD_PKEY);
         equip .@SHARD_ID + 1;
@@ -111,10 +111,11 @@ function script SS_ExperienceHandler {
     }
     
     /**
-     * Returns the last slain mob's experience. This value is modified by
-     * $SS_EXPERIENCE_SHARE in settings.conf
+     * Returns the last slain mob's experience. This value
+     * is modified by $SS_EXPERIENCE_SHARE in settings.conf
      */
     function getExperience {
+        // Gather monster experience.
         .@MOB_EXPERIENCE = getmonsterinfo(killedrid, MOB_BASEEXP);
         return .@MOB_EXPERIENCE = (.@MOB_EXPERIENCE * $SS_EXPERIENCE_SHARE) / 100;
     }
