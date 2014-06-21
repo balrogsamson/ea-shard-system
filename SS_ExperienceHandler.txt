@@ -7,13 +7,18 @@
  * TODO: hvae the unequip/equip script deal with updating holder info.
  *
  * @param item_id The crystal to receive experience points.
- * Ex. {},{},{ NPCKillEvent: SS_ExperienceHandler(21135); }
+ * Ex. NO THIS IS WRONG {},{},{ NPCKillEvent: SS_ExperienceHandler(21135); }
  */
- 
- 
- **
- * --------------------------------------------------------------------
- */
+
+
+// Mob kill hook.
+- script OnNPCKillEvent -1,{
+    // Each mob kill calls to check if EXP is
+    // to be sent to SS_ExperienceHandler.
+    OnNPCKillEvent:
+    end;
+}
+
 function script SS_ExperienceHandler {
     // Local function declarations.
     function storeExperience;
