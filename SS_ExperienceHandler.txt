@@ -12,29 +12,36 @@
 
 
 // Mob kill hook.
-- script OnNPCKillEvent -1,{
+- script    OnNPCKillEvent  -1,{
     OnNPCKillEvent:
-        if() {
+        if( ) {
             
         }
     end;
 }
 
+
+
+/**
+ * ...
+ * @param .@SHARD_ID
+ * @param .@EQUIP_SLOT
+ */
 function script SS_ExperienceHandler {
     // Local function declarations.
     function storeExperience;
     function upgradeShard;
     function getShardID;
+    function getEquipSlot;
     function getPrimaryKey;
     function getShardLevel;
-    function getEquipSlot;
     function getExperience;
 
     // Data definitions
     .@SHARD_ID = getShardID;
+    .@EQUIP_SLOT = getEquipSlot;
     .@SHARD_PKEY = getPrimaryKey;
     .@SHARD_LEVEL = getShardLevel;
-    .@EQUIP_SLOT = getEquipSlot;
 
     // MAIN CALL
     storeExperience;
@@ -90,6 +97,13 @@ function script SS_ExperienceHandler {
     }
     
     /**
+     * Returns the equip_slot parameter.
+     * Used the determine which shard is upgraded.
+    function getEquipSlot {
+        return getarg(1);
+    }
+    
+    /**
      * Returns the 32-bit primary key.
      */
     function getPrimaryKey {
@@ -101,19 +115,6 @@ function script SS_ExperienceHandler {
      */
     function getShardLevel {
         return getiteminfo(.SHARD_ID, 13);
-    }
-    
-    /**
-     * Checks the attached player's equipment for the
-     * parameter item_id. If it is found, returns the
-     * equipment slot.
-     */
-    function getEquipSlot {
-        // Does not account for duplicates.
-        if(getequipid(EQI_ACC_L) == .@SHARD_ID)
-            return EQI_ACC_L;
-        else
-            return EQI_ACC_R;
     }
     
     /**
