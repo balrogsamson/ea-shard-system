@@ -5,38 +5,31 @@
  * shard when the experience threshold is met.
  * 
  * TODO: hvae the unequip/equip script deal with updating holder info.
- *
- * @param item_id The crystal to receive experience points.
- * Ex. NO THIS IS WRONG {},{},{ NPCKillEvent: SS_ExperienceHandler(21135); }
  */
 
 
-// Mob kill hook.
+/**
+ * Compatible with r15982 and up.
+ * ...,{ bonus bAllStats, 1; },{ SS_ACTIVE_CNT += 1; },{ SS_ACTIVE_CNT -= 1; }
+ */
 - script    SS_ExperienceHandler  -1,{
     OnNPCKillEvent:
-
-        // Edict Shards can only be equipped by the Guildmaster.
-        // The special requirement is that the Guildmaster does not gain
-        // experience for the shard, but the guildmates will increase its
-        // level. Guildmates benefit from the shard rather than the player.
-    
-        if( SS_ACTIVE_CNT ) {
-            // Give both shards experience when two are equipped.
+        if(SS_ACTIVE_CNT) {
+            // ...
             if(SS_ACTIVE_CNT > 1) {
                 SS_Main(getequipid(EQI_ACC_L), EQI_ACC_L);
                 SS_Main(getequipid(EQI_ACC_R), EQI_ACC_R);
                 return;
             }
-            
-            // Find which one is the shard and call.
-            for(.@i = EQI_ACC_L; i <= EQI_ACC_R; .@i = .@i + 1) {
+
+            // ...
+            for(.@i = EQI_ACC_L; i <= EQI_ACC_R; .@i += 1) {
                 if(getiteminfo(.@i, 2)) {
                     SS_Main(getequipid(.@i), .@i);
                     return;
                 }
             }
         }
-    end;
 }
 
 
