@@ -9,7 +9,7 @@ function    script  SS_CreateShard {
     function getShardID;
 
     // Data definition.
-    .@SHARD_ID = getShardID;
+    .@shard_id = getShardID;
 
     // Create a new shard entry in the DB.
     query_sql("
