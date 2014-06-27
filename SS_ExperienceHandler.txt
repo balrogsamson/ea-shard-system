@@ -12,10 +12,29 @@
 
 
 // Mob kill hook.
-- script    OnNPCKillEvent  -1,{
+- script    SS_ExperienceHandler  -1,{
     OnNPCKillEvent:
-        if( ) {
+
+        // Edict Shards can only be equipped by the Guildmaster.
+        // The special requirement is that the Guildmaster does not gain
+        // experience for the shard, but the guildmates will increase its
+        // level. Guildmates benefit from the shard rather than the player.
+    
+        if( SS_ACTIVE_CNT ) {
+            // Give both shards experience when two are equipped.
+            if(SS_ACTIVE_CNT > 1) {
+                SS_Main(getequipid(EQI_ACC_L), EQI_ACC_L);
+                SS_Main(getequipid(EQI_ACC_R), EQI_ACC_R);
+                return;
+            }
             
+            // Find which one is the shard and call.
+            for(.@i = EQI_ACC_L; i <= EQI_ACC_R; .@i = .@i + 1) {
+                if(getiteminfo(.@i, 2)) {
+                    SS_Main(getequipid(.@i), .@i);
+                    return;
+                }
+            }
         }
     end;
 }
@@ -27,7 +46,7 @@
  * @param .@SHARD_ID
  * @param .@EQUIP_SLOT
  */
-function script SS_ExperienceHandler {
+function script SS_Main {
     // Local function declarations.
     function storeExperience;
     function upgradeShard;
