@@ -5,9 +5,12 @@
  * Ex. SS_CreateShard(11564);
  */
 function    script  SS_CreateShard {
+    // Local function declaration.
+    function getShardID;
+
     // Data definition.
-    .@shard_id = getarg(0);
-    
+    .@SHARD_ID = getShardID;
+
     // Create a new shard entry in the DB.
     query_sql("
         INSERT INTO `shard` (`creator_id`, `creator_name`, `date_created`, `item_id`)
@@ -25,6 +28,11 @@ function    script  SS_CreateShard {
     // Provide the player with the shard.
     getitem2 .@shard_id,1,1,0,0,,,.@card3,.@card4;
     return;
+
+    // ---- FUNCTIONS ----
+    function    getShardID  {
+        return getarg(0);
+    }
 }
 
 
