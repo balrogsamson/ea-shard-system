@@ -19,14 +19,14 @@
             if(SS_ACTIVE_CNT > 1) {
                 SS_Main(getequipid(EQI_ACC_L), EQI_ACC_L);
                 SS_Main(getequipid(EQI_ACC_R), EQI_ACC_R);
-                return;
+                break;
             }
 
             // ...
             for(.@i = EQI_ACC_L; i <= EQI_ACC_R; .@i += 1) {
-                if(getiteminfo(.@i, 2)) {
+                if(getiteminfo(.@i, 2) == 64) {
                     SS_Main(getequipid(.@i), .@i);
-                    return;
+                    break;
                 }
             }
         }
