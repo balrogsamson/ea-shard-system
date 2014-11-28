@@ -14,15 +14,17 @@
  */
 - script    SS_ExperienceHandler  -1,{
     OnNPCKillEvent:
-        if(SS_ACTIVE_CNT) {
-            // ...
-            if(SS_ACTIVE_CNT > 1) {
-                SS_Main(getequipid(EQI_ACC_L), EQI_ACC_L);
-                SS_Main(getequipid(EQI_ACC_R), EQI_ACC_R);
-                break;
-            }
-
-            // ...
+         // if 1 SHARD equipped ->
+         // Add exp to shard
+         
+         // if > 1 SHARD equipped ->
+         // add exp to both
+}
+        if(SS_ACTIVE_CNT > 1) {
+            SS_Main(getequipid(EQI_ACC_L), EQI_ACC_L);
+            SS_Main(getequipid(EQI_ACC_R), EQI_ACC_R);
+            break;
+        } else {
             for(.@i = EQI_ACC_L; i <= EQI_ACC_R; .@i += 1) {
                 if(getiteminfo(.@i, 2) == 64) {
                     SS_Main(getequipid(.@i), .@i);
