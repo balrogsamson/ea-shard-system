@@ -2,14 +2,11 @@
  * Creates a new shard. This function is used to setup a
  * new shard with a database entry and store its key.
  * @param shard_id The id of the shard to give to the player.
- * Ex. SS_CreateShard(11564);
+ * Ex. SSCreateShard(11564);
  */
-function    script  SS_CreateShard {
-    // Local function declaration.
-    function getShardID;
-
+function    script  SSCreateShard {
     // Data definition.
-    .@shard_id = getShardID;
+    .@shard_id = getarg(0);
 
     // Create a new shard entry in the DB.
     query_sql("
@@ -28,11 +25,6 @@ function    script  SS_CreateShard {
     // Provide the player with the shard.
     getitem2 .@shard_id,1,1,0,0,,,.@card3,.@card4;
     return;
-
-    // ---- FUNCTIONS ----
-    function    getShardID  {
-        return getarg(0);
-    }
 }
 
 
@@ -40,8 +32,8 @@ function    script  SS_CreateShard {
 /**
  * Upgrades an existing shard.
  * @param shard_id The id of the shard being upgraded.
- * Ex. SS_UpgradeShard(11564, 1);
-function    script  SS_UpgradeShard {
+ * Ex. SSUpgradeShard(11564, 1);
+function    script  SSUpgradeShard {
     // Data definitions.
     .@shard_id = getarg(0);
     .@shard_pkey = getarg(1);
@@ -71,6 +63,6 @@ function    script  SS_UpgradeShard {
  * progresses through the game the pool of possible items will increase.
  * @return shard_id Returns the ID number of the shard.
  */
-function	script	SS_DetermineShard	{
+function	script	SSDetermineShard	{
 
 }
