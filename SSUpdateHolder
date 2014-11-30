@@ -22,8 +22,6 @@ function  script  SSUpdateHolder {
     );
     return;
     
-    
-    
     // MAIN FUNCTIONS
     // ================================================================================
     /**
