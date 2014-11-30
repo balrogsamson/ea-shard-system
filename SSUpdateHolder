@@ -1,40 +1,40 @@
 /**
- * This code goes into the 'OnEquipScript' area of the shard item
- * code. This function will update the each time the shard is equipped. 
- * @param item_id An integer value indicating the item.
+ * Required in OnEquipScript area of shard items. Updates holder
+ * information in the database when a shard is equipped.
+ * @param integer shard_id An integer value indicating the item.
+ * @param boolean flag Used to determine equip or unequip. Not implemented.
  */
 function  script  SSUpdateHolder {
     // Function declarations.
     function getShardKey;
 
     // Data definitions.
-    .@SHARD_ID = getarg(0);
-    .@SHARD_KEY = getShardKey;
+    .@shard_id = getarg(0);
+    .@shard_key = getShardKey;
     
-    // --- MAIN CALL
-    // Update the `holder_id` and `holder_name` fields
-    // with attached player data.
-    // TODO: Condition that ensures its not called ALL the time.
+    // Update the `holder_id` and `holder_name` fields with attached player data.
     query_sql("
         UPDATE `shard`
         SET `holder_id` = "+ getchardid(0) +", `holder_name` = '"+ strcharid(0) +"'
-        WHERE `id` = " + .@SHARD_KEY
+        WHERE `id` = " + .@shard_key
     );
-    return;
+    
+    // Success!
+    return 0;
     
     // MAIN FUNCTIONS
     // ================================================================================
     /**
      * Checks the attached player's equipment for the
-     * parameter item_id. If it is found, returns the
-     * equipment slot then returns the stored id.
+     * parameter shard_id. Determine the equipment slot
+     * then return the stored key.
      */
     function getShardKey {
         // Obtain the equip slot.
-        if(getequipid(EQI_ACC_L) == .@SHARD_ID)
-            .@equipSlot = EQI_ACC_L;
+        if(getequipid(EQI_ACC_L) == .@shard_id)
+            .@equip_slot = EQI_ACC_L;
         else
-            .@equipSlot = EQI_ACC_R;
+            .@equip_slot = EQI_ACC_R;
 
         // Return the shard key.
         .@shard_key = (getequipcardid(.@equipSlot, 4) << 16) + getequipcardid(.@equipSlot, 3));
