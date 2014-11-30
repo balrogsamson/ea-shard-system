@@ -1,16 +1,14 @@
 /**
  * This code goes into the 'OnEquipScript' area of the shard item
- * code. This function will update the holder (the person in possession
- * of the shard) each time the shard is equipped. 
+ * code. This function will update the each time the shard is equipped. 
  * @param item_id An integer value indicating the item.
  */
-function  script  SS_UpdateHolder {
+function  script  SSUpdateHolder {
     // Function declarations.
-    function getShardID;
     function getShardKey;
 
     // Data definitions.
-    .@SHARD_ID = getShardID;
+    .@SHARD_ID = getarg(0);
     .@SHARD_KEY = getShardKey;
     
     // --- MAIN CALL
@@ -28,15 +26,6 @@ function  script  SS_UpdateHolder {
     
     // MAIN FUNCTIONS
     // ================================================================================
-    /**
-     * Returns the item_id parameter.
-     */
-    function getShardID {
-        return getarg(0);
-    }
-
-
-
     /**
      * Checks the attached player's equipment for the
      * parameter item_id. If it is found, returns the
