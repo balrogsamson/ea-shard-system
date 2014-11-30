@@ -3,64 +3,31 @@
  * point. These points will be used for leveling purposes. In addition to storing
  * experience points, this function will provide a player with the next level 
  * shard when the experience threshold is met.
- * 
- * TODO: hvae the unequip/equip script deal with updating holder info.
  */
-
 
 /**
- * Compatible with r15982 and up.
- * ...,{ bonus bAllStats, 1; },{ SS_ACTIVE_CNT += 1; },{ SS_ACTIVE_CNT -= 1; }
+ * Provides experience to the shard then
+ * upgrades it when level threshold is met.
+ * @param .@shard_id
+ * @param .@equip_slot
  */
-- script    SS_ExperienceHandler  -1,{
-    OnNPCKillEvent:
-         // if 1 SHARD equipped ->
-         // Add exp to shard
-         
-         // if > 1 SHARD equipped ->
-         // add exp to both
-}
-        if(SS_ACTIVE_CNT > 1) {
-            SS_Main(getequipid(EQI_ACC_L), EQI_ACC_L);
-            SS_Main(getequipid(EQI_ACC_R), EQI_ACC_R);
-            break;
-        } else {
-            for(.@i = EQI_ACC_L; i <= EQI_ACC_R; .@i += 1) {
-                if(getiteminfo(.@i, 2) == 64) {
-                    SS_Main(getequipid(.@i), .@i);
-                    break;
-                }
-            }
-        }
-}
-
-
-
-/**
- * ...
- * @param .@SHARD_ID
- * @param .@EQUIP_SLOT
- */
-function script SS_Main {
+function script SSExperienceHandler {
     // Local function declarations.
     function storeExperience;
     function upgradeShard;
-    function getShardID;
-    function getEquipSlot;
     function getPrimaryKey;
     function getShardLevel;
     function getExperience;
 
     // Data definitions
-    .@SHARD_ID = getShardID;
-    .@EQUIP_SLOT = getEquipSlot;
-    .@SHARD_PKEY = getPrimaryKey;
-    .@SHARD_LEVEL = getShardLevel;
+    .@shard_id = getarg(0);
+    .@equip_slot = getarg(1);
+    .@shard_pkey = getPrimaryKey;
+    .@shard_level = getShardLevel;
 
     // MAIN CALL
     storeExperience;
     return;
-
 
 
     // MAIN FUNCTIONS
@@ -71,15 +38,15 @@ function script SS_Main {
      * a crystal when its max level is attained.
      */
     function storeExperience {
-        // Store "quintessence" into the experience field.
+        // Store mob exp into the experience field.
         query_sql("
             UPDATE `shard`
             SET `experience` = `experience` + "+ getExperience +"
-            WHERE `id` = " + .@SHARD_KEY
+            WHERE `id` = " + .@shard_pkey
         ");
 
         // Provide the player with the next level shard if level threshold is met.
-        if(query_sql("SELECT `experience` FROM `shard` WHERE `id` = " + .@SHARD_KEY) > $SS_NEXT_LEVEL)
+        if(query_sql("SELECT `experience` FROM `shard` WHERE `id` = " + .@shard_pkey) > $SS_NEXT_LEVEL[getShardLevel - 1])
             upgradeShard;
 
         // Success
@@ -87,48 +54,34 @@ function script SS_Main {
     }
 
     /**
-     * Upgrade the shard.
+     * Upgrade the shard and provide player with the next
+     * level of the item.
      */
     function upgradeShard {
         // Unequip and delete the old shard.
-        unequip .@EQUIP_SLOT;
-        delitem .@SHARD_ID;
+        unequip .@equip_slot;
+        delitem .@shard_id;
 
         // Create and equip the new shard.
-        SS_UpgradeShard(.@SHARD_ID, .@SHARD_PKEY);
-        equip .@SHARD_ID + 1;
+        SSUpgradeShard(.@shard_id, .@shard_pkey);
+        equip .@shard_id + 1;
         return;
     }
 
     // ACCESSOR FUNCTIONS
     // ==================================================
     /**
-     * Returns the item_id parameter.
-     * Used to determine the equipped item.
-     */
-    function getShardID {
-        return getarg(0);
-    }
-    
-    /**
-     * Returns the equip_slot parameter.
-     * Used the determine which shard is upgraded.
-    function getEquipSlot {
-        return getarg(1);
-    }
-    
-    /**
      * Returns the 32-bit primary key.
      */
     function getPrimaryKey {
-        return (getequipcardid(.@EQUIP_SLOT, 3) << 16) + getequipcardid(.@EQUIP_SLOT, 4);
+        return (getequipcardid(.@equip_slot, 3) << 16) + getequipcardid(.@equip_slot, 4);
     }
 
     /**
      * Returns the Shard level.
      */
     function getShardLevel {
-        return getiteminfo(.SHARD_ID, 13);
+        return getiteminfo(.@shard_id, 13);
     }
     
     /**
@@ -141,4 +94,3 @@ function script SS_Main {
         return .@MOB_EXPERIENCE = (.@MOB_EXPERIENCE * $SS_EXPERIENCE_SHARE) / 100;
     }
 }
- 
