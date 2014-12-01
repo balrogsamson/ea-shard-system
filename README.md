@@ -1,39 +1,14 @@
 Ragnarok Online Shard System
 ============================
-A 'shard' is an expansion accessory item in Ragnarok Online, compatible with eAthena and rAthena emulation software. When a player character equips a 'shard' it absorbs experience points. When the experience threshold is met it 'levels up' which means an increase in stats. Each shard has a 'crystal' form which is met at maximum level.
+Originally inspired by the materia system in Final Fantasy VII.
+Recreated after seeing the scripts on ghxRO, an old private server.
 
-KEEPING ITEM DATA ACROSS CHARACTERS
-Keeping item data permanent across characters was the biggest challenge of thIs project. Because support for dynamic items is lacking, the only possible way to fix this was to limit trading and to use dynamic account variables. This creates messy code that is hard to debug and even harder to document. Currently, this issue is solved by using MySQL and 'slots'.
+A shard is an expansion accessory that includes a leveling system. When a player kills a monster, a piece of the experience is added directly to the shard. When the experience threshold is met the item will level up. This can mean an increase in stats for the player, party, or guild. Each shard has a completed crystal form when maximum level is attained. The shard system has only been tested on rAthena server emulation software.
 
-Items in Ragnarok Online have an integer that handles permanency. Normally, this integer is used for 'slots' and 'forged' items where data is stored in segments of 8-bits. This system uses the integer to store 'dynamic item identifiers' which include character data, experience and level.
+Technical Specification
+=======================
+Data permanency is a big issue within rAthena. Although, variable options exist they create messy code that is hard to debug. As a result, a database entry is created for each shard provided to a player. Additionally, a permanent 64-bit value (representing the database primary key) is applied to two slots on the shard. This allows for the proper entry to be found no matter who holds the item.
 
-DYMANIC ITEM IDENTIFIERS
+Because most accessory items only use one slot, the second slot will be used for miscellaneous data. All shard/crystal type items are classed as type 20 and the wLv field is used to easily identify the shard level. Here is an example of a database entry:
 
------
-
-IN PROGRESS: Completing the two main scripts. The experience handler deals with
-all things involving levels and only that while the shard provider creates sql
-entries and... provides shards.
-
-SSExperienceHandler.txt - 80% Completed.
-
- - calculateExperience() needs a solid formula for generating
-   exp per level. With eAthena's limited math capabilities this
-   will be tough. Continue reading into logrithmic and linear
-   growth.
-   
- - getExperience() needs a way to filter experience. Honestly, 
-   before I decide to tweak experience I should find out how
-   much it takes to make a level... Unlike my old script, this
-   script does not account for two shard being equipped and
-   division of experience.
-   
-SSCrystalProvider.txt - 50% Completed.
-
- - createShard() needs some cleanup. It's gone.through several
-   edits while still staying mostly the same. Really needs some
-   error checking, too.
-
-----
-
-
+25565,Burning_Shard_LV1,Burning Shard LV1,20,,,100,,,,1,0xFFFFFFFF,11,2,136,1,50,,,{ // ... },{ SSEquipped+=1; SSUpdateHolder(25565, 0); },{ SSEquipped-=1; SSUpdateHolder(25565, 1); }
