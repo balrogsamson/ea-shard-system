@@ -1,0 +1,24 @@
+/**
+ * Upgrades an existing shard.
+ * @param shard_id The id of the shard being upgraded.
+ * Ex. SSUpgradeShard(11564, 1);
+function    script  SSUpgradeShard {
+    // Data definitions.
+    .@shard_id = getarg(0);
+    .@shard_pkey = getarg(1);
+
+    // Update the database record.
+    query_sql("
+        UPDATE `shard`
+        SET `item_id` = `item_id` + 1, `level` = `level` + 1
+        WHERE `id` = " + .@shard_pkey
+    ");
+
+    // Re-segment the primary key.
+    .@card3 = .@shard_pkey >> 16;
+    .@card4 = .@shard_pkey & 65535;
+
+    // Provide the player with the new shard.
+    getitem2 .@shard_id,1,1,1,0,0,,,.@card3,.@card4;
+    return;
+}
