@@ -10,7 +10,6 @@ Technical Specification
 Data permanency across states is difficult in Athena. Although variable options (dymanic variables) exist, they create messy code. Instead we use a database and slots to track information no matter where the item goes. 32-bits of data are allocated to represent the database entry's primary key (which are applied to the last two slots of the shard). The following 16 bits are planned, but not currently implemented. Some ideas:
 * Dynamic bonuses (eg. ... of the Suffix, Prefixed ...)
 * Variable bonuses (eg. +1 STR - +5 STR)
-<br>
 
 ### Shard Entries ###
 All shard database entries are required to include their name with level included. Each shard is typed as class 20. The wLv field is used to easily identify level without hassle. The _OnEquip_ and _OnUnequip_ fields will contain an incrementing and deincrementing permanent character variable, respectively.<br>
