@@ -19,8 +19,8 @@ function    script  SSCreateShard {
     query_sql("SELECT MAX(`id`) AS `id` FROM `shard`", .@shard_key);
 
     // Segment the 32-bit primary key.
-    .@card3 = .@shard_pkey[0] >> 16;
-    .@card4 = .@shard_pkey[0] & 65535;
+    .@card3 = .@shard_key[0] >> 16;
+    .@card4 = .@shard_key[0] & 65535;
 
     // Provide the player with the shard.
     getitem2 .@shard_id,1,1,0,0,,,.@card3,.@card4;
