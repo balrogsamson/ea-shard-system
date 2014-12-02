@@ -1,7 +1,7 @@
 Ragnarok Online Shard System
 ============================
-Originally inspired by the materia system in Final Fantasy VII.\n
-Recreated after seeing the scripts on ghxRO, an old private server.
+Originally inspired by the materia system in Final Fantasy VII.<br>
+Recreated after seeing the scripts on ghxRO, an old private server.<br>
 
 A shard is an expansion accessory that includes a leveling system. When a player kills a monster, a piece of the experience is added directly to the shard. When the experience threshold is met the item will level up. This can mean an increase in stats for the player, party, or guild. Each shard has a completed crystal form when maximum level is attained. The shard system has only been tested on rAthena server emulation software.
 
