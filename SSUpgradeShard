@@ -1,7 +1,7 @@
 /**
- * Upgrades an existing shard.
+ * Increases the level of an equipped shard by 1.
  * @param shard_id The id of the shard being upgraded.
- * Ex. SSUpgradeShard(11564, 1);
+ * Ex. SSUpgradeShard(11564);
 function    script  SSUpgradeShard {
     // Data definitions.
     .@shard_id = getarg(0);
