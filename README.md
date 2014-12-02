@@ -7,9 +7,15 @@ A shard is an expansion accessory that includes a leveling system. When a player
 
 Technical Specification
 =======================
-Data permanency is a big issue within rAthena. Although, variable options exist they create messy code that is hard to debug. As a result, a database entry is created for each shard provided to a player. Additionally, a permanent 32-bit value (representing the database primary key) is applied to two slots on the shard. This allows for the proper entry to be found no matter who holds the item. The following 16 bits are planned, but not implemented.
+Data permanency across states is difficult in Athena. Although variable options (dymanic variables) exist, they create messy code. Instead we use a database and slots to track information no matter where the item goes. 32-bits of data are allocated to represent the database entry's primary key (which are applied to the last two slots of the shard). The following 16 bits are planned, but not currently implemented. Some ideas:<br>
+<br>
+* Dynamic bonuses (eg. ... of the Suffix, Prefixed ...)
+* Variable bonuses (eg. +1 STR - +5 STR)
+<br>
 
-All shard/crystal type items are classed as type 20 and the wLv field is used to easily identify the shard level. Here is an example of a database entry:
+### Shard Entries ###
+All shard database entries are required to include their name with level included. Each shard is typed as class 20. The wLv field is used to easily identify level without hassle. The _OnEquip_ and _OnUnequip_ fields will contain an incrementing and deincrementing permanent character variable, respectively.<br>
+
 ```
 25565,Burning_Shard_LV1,Burning Shard LV1,20,,,100,,,,1,0xFFFFFFFF,11,2,136,1,50,,,{ // item script },{ SSEquipped += 1; },{ SSEquipped -= 1; }
 ```
