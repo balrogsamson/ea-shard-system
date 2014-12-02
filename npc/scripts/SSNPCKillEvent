@@ -6,6 +6,8 @@
  * When a monster dies call activate SSNPCKillEvent script,
  * determine which shards require experience, then call
  * SSExperienceHandler to manage experience distribution.
+ *
+ * TODO: Make this more efficient using bitwise operators.
  */
 - script SSNPCKillEvent -1,{
     OnNPCKillEvent:
