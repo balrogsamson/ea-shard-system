@@ -1,11 +1,4 @@
 /**
- * This function will provide a crystal with "essence", a type of experience
- * point. These points will be used for leveling purposes. In addition to storing
- * experience points, this function will provide a player with the next level 
- * shard when the experience threshold is met.
- */
-
-/**
  * Provides experience to the shard then
  * upgrades it when level threshold is met.
  * @param .@shard_id
@@ -85,12 +78,11 @@ function script SSExperienceHandler {
     }
     
     /**
-     * Returns the last slain mob's experience. This value
-     * is modified by $SS_EXPERIENCE_SHARE in settings.conf
+     * Returns the last slain mob's experience.
      */
     function getExperience {
         // Gather monster experience.
-        .@MOB_EXPERIENCE = getmonsterinfo(killedrid, MOB_BASEEXP);
-        return .@MOB_EXPERIENCE = (.@MOB_EXPERIENCE * $SS_EXPERIENCE_SHARE) / 100;
+        .@mob_exp = getmonsterinfo(killedrid, MOB_BASEEXP);
+        return .@mob_exp;
     }
 }
