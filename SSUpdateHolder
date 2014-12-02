@@ -1,3 +1,6 @@
+// THIS SCRIPT IS CURRENTLY DEPRECATED UNTIL
+// A PROPER USE CAN BE DETERMINED.
+
 /**
  * Required in OnEquipScript area of shard items. Updates holder
  * information in the database when a shard is equipped.
