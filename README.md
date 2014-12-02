@@ -7,8 +7,7 @@ A shard is an expansion accessory that includes a leveling system. When a player
 
 Technical Specification
 =======================
-Data permanency across states is difficult in Athena. Although variable options (dymanic variables) exist, they create messy code. Instead we use a database and slots to track information no matter where the item goes. 32-bits of data are allocated to represent the database entry's primary key (which are applied to the last two slots of the shard). The following 16 bits are planned, but not currently implemented. Some ideas:<br>
-<br>
+Data permanency across states is difficult in Athena. Although variable options (dymanic variables) exist, they create messy code. Instead we use a database and slots to track information no matter where the item goes. 32-bits of data are allocated to represent the database entry's primary key (which are applied to the last two slots of the shard). The following 16 bits are planned, but not currently implemented. Some ideas:
 * Dynamic bonuses (eg. ... of the Suffix, Prefixed ...)
 * Variable bonuses (eg. +1 STR - +5 STR)
 <br>
