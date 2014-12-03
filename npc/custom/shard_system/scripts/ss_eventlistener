@@ -7,7 +7,7 @@
  * determine which shards require experience, then call
  * SSExperienceHandler to manage experience distribution.
  */
-- script SSNPCKillEventListener -1,{
+- script SSEventListener -1,{
     OnNPCKillEvent:
         if(SSEquipped == 1) {
             if(getequipweaponlv(EQI_ACC_L))
