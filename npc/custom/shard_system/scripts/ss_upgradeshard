@@ -1,6 +1,7 @@
 /**
  * Increases the level of an equipped shard by 1.
  * @param shard_id The id of the shard being upgraded.
+ * @param shard_pkey The associated database entry id.
  * Ex. SSUpgradeShard(11564);
 function    script  SSUpgradeShard {
     // Data definitions.
@@ -13,6 +14,9 @@ function    script  SSUpgradeShard {
         SET `item_id` = `item_id` + 1, `level` = `level` + 1
         WHERE `id` = " + .@shard_pkey
     ");
+
+    // Increase the ID by one.
+    .@shard_id = .@shard_id + 1;
 
     // Re-segment the primary key.
     .@card3 = .@shard_pkey >> 16;
