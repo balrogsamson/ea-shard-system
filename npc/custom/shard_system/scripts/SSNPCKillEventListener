@@ -1,13 +1,13 @@
 /**
  * When a shard is equipped, increase SSEquipped by 1.
- * When a shard is unquipped, decrease SSEquipped by 1.
+ * When a shard is unequipped, decrease SSEquipped by 1.
  * SSEquipped determines how many shards are equipped.
  *
- * When a monster dies call activate SSNPCKillEvent script,
+ * When a monster dies invoke SSNPCKillEventListener script,
  * determine which shards require experience, then call
  * SSExperienceHandler to manage experience distribution.
  */
-- script SSNPCKillEvent -1,{
+- script SSNPCKillEventListener -1,{
     OnNPCKillEvent:
         if(SSEquipped == 1) {
             if(getequipweaponlv(EQI_ACC_L))
