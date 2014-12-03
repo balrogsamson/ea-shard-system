@@ -6,25 +6,18 @@
  * When a monster dies call activate SSNPCKillEvent script,
  * determine which shards require experience, then call
  * SSExperienceHandler to manage experience distribution.
- *
- * TODO: Make this more efficient using bitwise operators somehow.
  */
 - script SSNPCKillEvent -1,{
     OnNPCKillEvent:
-        if(SSEquipped) {
-            
+        if(SSEquipped == 1) {
+            if(getequipweaponlv(EQI_ACC_L))
+                callfunc("SSExperienceHandler", getequipid(EQI_ACC_L), EQI_ACC_L);
+            else
+                callfunc("SSExperienceHandler", getequipid(EQI_ACC_R), EQI_ACC_R);
         }
-    /*
-    BOTCHED ASS CODE
-                if(SSEquipped == 1) {
-                if(getiteminfo(EQI_ACC_L, 2) == 20)
-                    SSExperienceHandler(getequipid(EQI_ACC_L), EQI_ACC_L);
-                else
-                    SSExperienceHandler(getequipid(EQI_ACC_R), EQI_ACC_R);
-            } else {
-                SSExperienceHandler(getequipid(EQI_ACC_L), EQI_ACC_L);
-                SSExperienceHandler(getequipid(EQI_ACC_R), EQI_ACC_R);
-            }
-    
-    */
+        
+        if(SSEquipped == 2) {
+            callfunc("SSExperienceHandler", getequipid(EQI_ACC_L), EQI_ACC_L);
+            callfunc("SSExperienceHandler", getequipid(EQI_ACC_R), EQI_ACC_R);
+        }
 }
