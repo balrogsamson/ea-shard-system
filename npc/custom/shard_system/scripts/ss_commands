@@ -1,0 +1,6 @@
+// I hate labels...
+-	script	SSCommands	-1,{
+
+    bindatcmd "shardinfo", ;
+    bindatcmd "shard
+}
