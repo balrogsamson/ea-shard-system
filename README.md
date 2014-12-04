@@ -17,3 +17,9 @@ All shard database entries are required to include their name with level include
 ```
 25565,Burning_Shard_LV1,Burning Shard LV1,20,,,100,,,,1,0xFFFFFFFF,11,2,136,1,50,,,{ // item script },{ SSEquipped += 1; },{ SSEquipped -= 1; }
 ```
+
+### TODO ###
+* Create an atcommand that will provide players with data on their equipped shards.
+* Create the database files for easy addition.
+* Separate client-side and server-side files for easy addition.
+* Work on the ToLevel variable and associated formulae.
