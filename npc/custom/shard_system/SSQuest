@@ -1,0 +1,82 @@
+ Shard Quest storyboard
+ 
+ PART I
+ * The PC discovers a book in the Clock Tower written in an ancient dialect of Norman.
+ * The PC takes the book to the 'Historian' in Juno. After one whole day, the 'Historian' will disappear.
+ * After searching for the 'Historian' they will find remnants of the book in the trash. This will
+   activate him at the Heart of Ymir.
+ * The PC will find him. He talks about Ymir's Heart, Varmundt's death, the Rekenber Corporation and
+   the perfect runestone.
+  
+ SPEECH
+ Varmundt asked a strange question
+ earlier in the journal: why do Normans
+ fight? We despise war, but we continue
+ to kill each other. Now, it is only
+ obvious, right?
+
+ MENU
+ PC> What are you talking about?
+ NEXT
+ 
+ We fight because we yearn. In our hearts,
+ we want to live but we truly want to die.
+ Varmundt says this world was created by
+ Ymir's heart and it yearns just like ours.
+ It wants this world to finally die. We are
+ already on the edge...
+ 
+ MENU
+ PC> That can't be true! That's wrong!
+ NEXT
+ 
+ It only makes sense! Our own bodies work
+ tirelessly against us! Just like this world,
+ we must have been made from the heart! Why
+ should we grow close to the Gods? To ascend?
+ To be lead astray from our true purpose?
+ 
+ MENU
+ PC> You're crazy...
+ NEXT
+ 
+ Listen carefully: your heart is calling.
+ Fall between the cracks of this world,
+ descend. Then you will understand just
+ like Varmundt did.
+ 
+ MENU
+ PC> ...!
+ NEXT
+ 
+ Between the head and the hands must be
+ the heart.
+ 
+ In a flash, the crazed Historian slices
+ his own throat. In his last moments, he
+ gasps for air eventually falling limp.
+ NEXT
+ 
+ END PART 1
+ 
+ PART II (spooky)
+ There are four events triggered by death. This is to represent the player growing closer to the abyss.
+ Each event has a 3% chance of being triggered. On the last event, the player is teleported to 
+ Ginnungigap, The Land Between.
+ 
+ You hear a voice in the distance.
+ '...between the cracks of this world...'
+ 
+ The historian's speech comes to mind.
+ 'Listen ... you will understand.'
+ 
+ You answer but no one can hear.
+ 'What do you mean...?'
+ 
+ Clearly now, everything makes sense.
+ 'Descend.'
+ 
+ RESPAWN in Ginnungigap, The Land Between.
+ DISABLE ALL FORMS OF TRAVEL.
+ 
+ PART III (MOAR SPOOKY)
