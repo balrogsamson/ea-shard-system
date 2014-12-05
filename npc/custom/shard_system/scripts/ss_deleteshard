@@ -1,8 +1,18 @@
 /**
- * ...
- * @param .@item_id
- * @param .@shard_key
+ * Delete a specific shard from inventory.
+ * @param .@shard_id The id of the shard being upgraded.
+ * @param .@shard_key The associated database entry id.
  */
 function	script	SSDeleteShard	{
+    // Data definitions.
+    .@shard_id = getarg(0);
+    .@shard_key = getarg(1);
     
+    // Segment the primary key.
+    .@card2 = .@shard_key & 65535;
+    .@card3 = .@shard_key >> 16;
+    
+    // Delete the shard based on the primary key.
+    delitem2 .@shard_id,1,1,,,-256,.@card2,.@card3,;
+    return;
 }
