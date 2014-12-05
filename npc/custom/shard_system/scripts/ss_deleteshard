@@ -1,1 +1,8 @@
-// Deletes a specific shard.
+/**
+ * ...
+ * @param .@item_id
+ * @param .@shard_key
+ */
+function	script	SSDeleteShard	{
+    
+}
