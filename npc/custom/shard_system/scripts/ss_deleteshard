@@ -9,10 +9,10 @@ function	script	SSDeleteShard	{
     .@shard_key = getarg(1);
     
     // Segment the primary key.
-    .@card2 = .@shard_key & 65535;
-    .@card3 = .@shard_key >> 16;
+    .@card2 = .@shard_key >> 16;
+    .@card3 = .@shard_key & 65535;
     
     // Delete the shard based on the primary key.
-    delitem2 .@shard_id,1,1,,,-256,.@card2,.@card3,;
+    delitem2 .@shard_id,1,1,0,0,-256,.@card2,.@card3,0;
     return;
 }
