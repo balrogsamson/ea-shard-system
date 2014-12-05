@@ -49,8 +49,8 @@ function script SSExperienceHandler {
     /**
      * Upgrade the shard and provide player with the next
      * level of the item.
-     * TODO: Make a script to ensure delitem doesn't go wild
-     *       deleting shards of the same id.
+     * TODO: Make a script to ensure the right shard
+     *       is equipped.
      */
     function upgradeShard {
         // Unequip and delete the old shard.
