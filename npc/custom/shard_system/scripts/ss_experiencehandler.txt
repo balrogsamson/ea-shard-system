@@ -49,6 +49,8 @@ function script SSExperienceHandler {
     /**
      * Upgrade the shard and provide player with the next
      * level of the item.
+     * TODO: Make a script to ensure delitem doesn't go wild
+     *       deleting shards of the same id.
      */
     function upgradeShard {
         // Unequip and delete the old shard.
@@ -79,6 +81,7 @@ function script SSExperienceHandler {
     
     /**
      * Returns the last slain mob's experience.
+     * TODO: Just make sure a -1 value isn't returned.
      */
     function getExperience {
         // Gather monster experience.
