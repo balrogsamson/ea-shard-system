@@ -1,8 +1,8 @@
 /**
  * Provides experience to the shard then
  * upgrades it when level threshold is met.
- * @param .@shard_id
- * @param .@equip_slot
+ * @param .@shard_id The shard receiving experience.
+ * @param .@equip_slot Equipment slot for clarification.
  */
 function script SSExperienceHandler {
     // Local function declarations.
@@ -15,7 +15,7 @@ function script SSExperienceHandler {
     // Data definitions
     .@shard_id = getarg(0);
     .@equip_slot = getarg(1);
-    .@shard_pkey = getPrimaryKey;
+    .@shard_key = getPrimaryKey;
     .@shard_level = getShardLevel;
 
     // MAIN CALL
@@ -35,11 +35,11 @@ function script SSExperienceHandler {
         query_sql("
             UPDATE `shard`
             SET `experience` = `experience` + "+ getExperience +"
-            WHERE `id` = " + .@shard_pkey
+            WHERE `id` = " + .@shard_key
         ");
 
         // Provide the player with the next level shard if level threshold is met.
-        if(query_sql("SELECT `experience` FROM `shard` WHERE `id` = " + .@shard_pkey) > $SS_NEXT_LEVEL[getShardLevel - 1])
+        if(query_sql("SELECT `experience` FROM `shard` WHERE `id` = " + .@shard_key) > $SS_NEXT_LEVEL[getShardLevel - 1])
             upgradeShard;
 
         // Success
@@ -55,10 +55,10 @@ function script SSExperienceHandler {
     function upgradeShard {
         // Unequip and delete the old shard.
         unequip .@equip_slot;
-        SSDeleteShard(.@shard_id, .@shard_pkey);
+        SSDeleteShard(.@shard_id, .@shard_key);
 
         // Create and equip the new shard.
-        SSUpgradeShard(.@shard_id, .@shard_pkey);
+        SSUpgradeShard(.@shard_id, .@shard_key);
         equip .@shard_id + 1;
         return;
     }
