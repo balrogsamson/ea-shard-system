@@ -19,10 +19,10 @@ function    script  SSUpgradeShard {
     .@shard_id = .@shard_id + 1;
 
     // Re-segment the primary key.
+    .@card2 = .@shard_pkey & 65535;
     .@card3 = .@shard_pkey >> 16;
-    .@card4 = .@shard_pkey & 65535;
 
     // Provide the player with the new shard.
-    getitem2 .@shard_id,1,1,1,0,0,,,.@card3,.@card4;
+    getitem2 .@shard_id,1,1,1,0,0,-256,.@card2,.@card3,;
     return;
 }
