@@ -55,7 +55,7 @@ function script SSExperienceHandler {
     function upgradeShard {
         // Unequip and delete the old shard.
         unequip .@equip_slot;
-        delitem .@shard_id;
+        SSDeleteShard(.@shard_id, .@shard_pkey);
 
         // Create and equip the new shard.
         SSUpgradeShard(.@shard_id, .@shard_pkey);
@@ -69,7 +69,7 @@ function script SSExperienceHandler {
      * Returns the 32-bit primary key.
      */
     function getPrimaryKey {
-        return (getequipcardid(.@equip_slot, 3) << 16) + getequipcardid(.@equip_slot, 4);
+        return (getequipcardid(.@equip_slot, 2) << 16) + getequipcardid(.@equip_slot, 3);
     }
 
     /**
