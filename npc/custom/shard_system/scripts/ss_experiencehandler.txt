@@ -59,7 +59,7 @@ function script SSExperienceHandler {
 
         // Create and equip the new shard.
         SSUpgradeShard(.@shard_id, .@shard_key);
-        equip .@shard_id + 1;
+        SSEquipShard(.@shard_id + 1, .@shard_key);
         return;
     }
 
