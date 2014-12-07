@@ -1,6 +1,12 @@
-// I hate labels...
 -	script	SSCommands	-1,{
-
-    bindatcmd "shardinfo", ;
-    bindatcmd "shard
+    // ...
+    OnInit:
+        bindatcmd("si", "SSCommands::OnCommand");
+        bindatcmd("shardinfo", "SSCommands::OnCommand");
+    end;
+    
+    // ...
+    OnCommand:
+        
+    end;
 }
