@@ -4,7 +4,7 @@
  * @param .@shard_id The shard receiving experience.
  * @param .@equip_slot Equipment slot for clarification.
  */
-function script SSExperienceHandler {
+function script SSEventHandler {
     // Local function declarations.
     function storeExperience;
     function upgradeShard;
