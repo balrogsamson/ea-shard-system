@@ -21,5 +21,6 @@ All shard database entries are required to include their name with level include
 ### TODO ###
 * Create an atcommand that will provide players with data on their equipped shards (look into _bindatcmd_).
 * Create the database files for easy addition.
-* Separate client-side and server-side files for easy addition.
+* Separate client-side and server-side folders for easy addition.
 * Work on the ToLevel variable and associated formulae.
+* Eventually merge functions into file groupings.
