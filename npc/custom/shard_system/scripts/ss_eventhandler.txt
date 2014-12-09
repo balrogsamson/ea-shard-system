@@ -6,11 +6,12 @@
  */
 function script SSEventHandler {
     // Local function declarations.
-    function storeExperience;
+    function updateExperience;
+    function getMobExperience;
+    function getNextExperience;
     function upgradeShard;
     function getPrimaryKey;
     function getShardLevel;
-    function getExperience;
 
     // Data definitions
     .@shard_id = getarg(0);
@@ -19,7 +20,7 @@ function script SSEventHandler {
     .@shard_level = getShardLevel;
 
     // MAIN CALL
-    storeExperience;
+    updateExperience;
     return;
 
 
@@ -30,16 +31,16 @@ function script SSEventHandler {
      * leveling up shards. Calls getExperience to calculate essence. A shard becomes
      * a crystal when its max level is attained.
      */
-    function storeExperience {
+    function updateExperience {
         // Store mob exp into the experience field.
         query_sql("
             UPDATE `shard`
-            SET `experience` = `experience` + "+ getExperience +"
+            SET `experience` = `experience` + "+ getMobExperience +"
             WHERE `id` = " + .@shard_key
         ");
 
         // Provide the player with the next level shard if level threshold is met.
-        if(query_sql("SELECT `experience` FROM `shard` WHERE `id` = " + .@shard_key) > $SS_NEXT_LEVEL[getShardLevel - 1])
+        if(query_sql("SELECT `experience` FROM `shard` WHERE `id` = " + .@shard_key) >= getNextExperience)
             upgradeShard;
 
         // Success
@@ -63,8 +64,6 @@ function script SSEventHandler {
         return;
     }
 
-    // ACCESSOR FUNCTIONS
-    // ==================================================
     /**
      * Returns the 32-bit primary key.
      */
@@ -81,11 +80,37 @@ function script SSEventHandler {
     
     /**
      * Returns the last slain mob's experience.
-     * TODO: Just make sure a -1 value isn't returned.
+     * TODO: Ensure -1 is never returned?
+     * TODO: Should shard_exp_rate increase based on difficulty_factor?
+     * TODO: Recreate this to use BaseExp, NextBaseExp and the difference
+     * between monster kills. This will be more accurate.
      */
-    function getExperience {
-        // Gather monster experience.
-        .@mob_exp = getmonsterinfo(killedrid, MOB_BASEEXP);
-        return .@mob_exp;
+    function getMobExperience {
+        // Make sure shard_exp_rate is not negative or zero.
+        if(($shard_exp_rate - (.@shard_level * 2) <= 0)
+            $shard_exp_rate = 1;
+
+        // Gather a percentage of monster base experience by shard_exp_rate.
+        .@gained_exp = ($shard_exp_rate - (.@shard_level * 2)) * (getmonsterinfo(killedrid, MOB_BASEEXP) / 100);
+
+        // Provide a bonus based on shard_exp_boss_rate when a mini-boss or boss is killed.
+        if(getmonsterinfo(killedrid, MOB_MODE) & 32)
+            .@gained_exp += $shard_exp_boss_rate * (.@gained_exp / 100);
+
+        return .@gained_exp;
+    }
+
+    /**
+     * Returns the experience necessary to level.
+     */
+    function getNextExperience    {
+        // Make sure difficulty_ratio is not negative or zero.
+        if($difficulty_ratio <= 0)
+            $difficulty_ratio = 1;
+
+        // Calculate the base experience 
+        .@base_next_level = $shard_base_exp * $server_rate;
+
+        // ...
     }
 }
