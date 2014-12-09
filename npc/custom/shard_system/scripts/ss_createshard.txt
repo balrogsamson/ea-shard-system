@@ -17,7 +17,7 @@ function    script  SSCreateShard {
     // Create a new shard entry in the DB.
     query_sql("
         INSERT INTO `shard` (`creator_id`, `creator_name`, `date_created`, `item_id`)
-        VALUES("+ getchardid(0) +", '"+ strcharinfo(0) +"', GETDATE(), "+ .@shard_id +")
+        VALUES("+ getchardid(0) +", '"+ escape_sql(strcharinfo(0)) +"', GETDATE(), "+ .@shard_id +")
     ");
 
     // Grabs the latest entries' id. This is used later for
