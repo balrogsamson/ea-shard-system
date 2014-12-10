@@ -7,7 +7,7 @@
 function    script  SSCreateShard {
     // Exception catch.
     if(getarg(0,0) == 0 || getitemname(getarg(0,0)) == "null") {
-        debugmes "SSCreateShard called with invalid argument " + getarg(0,0);
+        debugmes "[Error] SSCreateShard called with invalid argument " + getarg(0,0);
         return;
     }
 
