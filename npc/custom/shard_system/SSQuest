@@ -1,6 +1,6 @@
  Shard Quest storyboard
  
- PART I
+ PART I: The Secret is Revealed
  * The PC discovers a book in the Clock Tower written in an ancient dialect of Norman.
  * The PC takes the book to the 'Historian' in Juno. After one whole day, the 'Historian' will disappear.
  * After searching for the 'Historian' they will find remnants of the book in the trash. This will
@@ -67,10 +67,10 @@
  
  END PART 1
  
- PART II (spooky)
- There are four events triggered by death. This is to represent the player growing closer to the abyss.
- Each event has a 3% chance of being triggered. On the last event, the player is teleported to 
- Ginnungigap, The Land Between.
+ PART II: Calling, Yearning
+ * Upon death, there is a 5% chance that an event will be triggered. Each time, the player will be
+ called out signaling harmony with the abyss. On the last death, the player will be teleported to the
+ deepest recesses of Gjoll Valley upon a boat. The Dark Guardian, Kades will greet them.
  
  You hear a voice in the distance.
  '...between the cracks of this world...'
@@ -84,7 +84,15 @@
  Clearly now, everything makes sense.
  'Descend.'
  
- RESPAWN in Ginnungigap, The Land Between.
+ RESPAWN on the Gjoll River heading towards The Yawning Void, Ginnungigap
  DISABLE ALL FORMS OF TRAVEL.
  
- PART III (MOAR SPOOKY)
+ PART III: Where the Heart Rests
+ -------------------------------
+ PC: Dead, confused, and lost. He is greeted by the mysterious Kades, a cloaked figure. He speaks in a hard-to-understand,
+ disjointed manner. Any questions are met with silence. Once the PC crosses into the void, he disappears. Varmundt, the
+ Historian, and various other characters are found here all looking for some way to escape.
+ 
+ Kades the Dark Guardian: A mysterious cloaked figure. He guides the PC across the rivers of Gjoll, onto a shore made of
+ solid darkness. Strange shadow creatures flee and never come near the safehaven of Vanir's Landing.
+ 
