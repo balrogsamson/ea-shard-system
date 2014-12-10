@@ -18,6 +18,8 @@ function script SSEventHandler {
     .@equip_slot = getarg(1);
     .@shard_key = getPrimaryKey;
     .@shard_level = getShardLevel;
+    .@mob_exp = getMobExperience;
+    .@next_exp = getNextExperience;
 
     // MAIN CALL
     updateExperience;
@@ -35,12 +37,12 @@ function script SSEventHandler {
         // Store mob exp into the experience field.
         query_sql("
             UPDATE `shard`
-            SET `experience` = `experience` + "+ getMobExperience +"
+            SET `experience` = `experience` + "+ .@mob_exp +"
             WHERE `id` = " + .@shard_key
         ");
 
         // Provide the player with the next level shard if level threshold is met.
-        if(query_sql("SELECT `experience` FROM `shard` WHERE `id` = " + .@shard_key) >= getNextExperience)
+        if(query_sql("SELECT `experience` FROM `shard` WHERE `id` = " + .@shard_key) >= .@next_exp)
             upgradeShard;
 
         // Success
@@ -50,8 +52,8 @@ function script SSEventHandler {
     /**
      * Upgrade the shard and provide player with the next
      * level of the item.
-     * TODO: Make a script to ensure the right shard
-     *       is equipped.
+     * TODO: Eventually use getequipuniqueid code to single
+     * out shards based on their unique id rather than key.
      */
     function upgradeShard {
         // Unequip and delete the old shard.
@@ -87,11 +89,11 @@ function script SSEventHandler {
      */
     function getMobExperience {
         // Make sure shard_exp_rate is not negative or zero.
-        if(($shard_exp_rate - (.@shard_level * 2) <= 0)
-            $shard_exp_rate = 1;
+        if(($shard_exp_rate - .@shard_level) <= 0)
+            $shard_exp_rate = .@shard_level + 1;
 
         // Gather a percentage of monster base experience by shard_exp_rate.
-        .@gained_exp = ($shard_exp_rate - (.@shard_level * 2)) * (getmonsterinfo(killedrid, MOB_BASEEXP) / 100);
+        .@gained_exp = ($shard_exp_rate - .@shard_level) * (getmonsterinfo(killedrid, MOB_BASEEXP) / 100);
 
         // Provide a bonus based on shard_exp_boss_rate when a mini-boss or boss is killed.
         if(getmonsterinfo(killedrid, MOB_MODE) & 32)
@@ -104,13 +106,6 @@ function script SSEventHandler {
      * Returns the experience necessary to level.
      */
     function getNextExperience    {
-        // Make sure difficulty_ratio is not negative or zero.
-        if($difficulty_ratio <= 0)
-            $difficulty_ratio = 1;
-
-        // Calculate the base experience 
-        .@base_next_level = $shard_base_exp * $server_rate;
-
-        // ...
+        return .@base_next_level = .@shard_level * ($shard_base_exp * $server_rate);
     }
 }
