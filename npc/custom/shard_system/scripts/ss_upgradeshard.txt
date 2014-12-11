@@ -11,9 +11,12 @@ function    script  SSUpgradeShard {
     // Update the database record.
     query_sql("
         UPDATE `shard`
-        SET `item_id` = `item_id` + 1, `level` = `level` + 1
+        SET `item_id` = `item_id` + 1, 
+            `item_name` = "+ getitemname(.@shard_id + 1) +",
+            `level` = `level` + 1,
+            `experience` = 0
         WHERE `id` = " + .@shard_key
-    ");
+    );
 
     // Increase the ID by one.
     .@shard_id = .@shard_id + 1;
