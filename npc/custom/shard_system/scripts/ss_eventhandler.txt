@@ -62,7 +62,7 @@ function script SSEventHandler {
 
         // Create and equip the new shard.
         SSUpgradeShard(.@shard_id, .@shard_key);
-        SSEquipShard(.@shard_id + 1, .@shard_key);
+        SSEquipShard(.@shard_id, .@shard_key);
         return;
     }
 
