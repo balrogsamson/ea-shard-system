@@ -22,8 +22,9 @@ function    script  SSCreateShard {
 
     // Select the newest shard entry.
     query_sql("
-        SELECT MAX(`id`) AS `id` FROM `shard`
-        WHERE `char_id` = "+ getchardid(0), .@shard_key
+        SELECT `id` FROM `shard`
+        WHERE `char_id` = "+ getcharid(0) +"
+        ORDER BY `date_created` DESC LIMIT 1", .@shard_key
     );
 
     // Segment the 32-bit primary key.
