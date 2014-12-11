@@ -16,13 +16,15 @@ function    script  SSCreateShard {
 
     // Create a new shard entry in the DB.
     query_sql("
-        INSERT INTO `shard` (`creator_id`, `creator_name`, `date_created`, `item_id`)
-        VALUES("+ getchardid(0) +", '"+ escape_sql(strcharinfo(0)) +"', GETDATE(), "+ .@shard_id +")
+        INSERT INTO `shard` (`char_id`, `char_name`, `item_id`, `date_created`)
+        VALUES("+ getchardid(0) +", '"+ escape_sql(strcharinfo(0)) +"', "+ .@shard_id +", GETDATE())
     ");
 
-    // Grabs the latest entries' id. This is used later for
-    // determining the correct shard in scripts.
-    query_sql("SELECT MAX(`id`) AS `id` FROM `shard`", .@shard_key);
+    // Select the newest shard entry.
+    query_sql("
+        SELECT MAX(`id`) AS `id` FROM `shard`
+        WHERE `char_id` = "+ getchardid(0), .@shard_key
+    );
 
     // Segment the 32-bit primary key.
     .@card2 = .@shard_key[0] >> 16;
