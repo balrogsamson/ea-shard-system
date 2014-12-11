@@ -89,11 +89,11 @@ function script SSEventHandler {
      */
     function getMobExperience {
         // Make sure shard_exp_rate is not negative or zero.
-        if(($shard_exp_rate - .@shard_level) <= 0)
+        if(($shard_exp_rate - (.@shard_level * $difficulty_mf)) <= 0)
             $shard_exp_rate = .@shard_level + 1;
 
         // Gather a percentage of monster base experience by shard_exp_rate.
-        .@gained_exp = ($shard_exp_rate - .@shard_level) * (getmonsterinfo(killedrid, MOB_BASEEXP) / 100);
+        .@gained_exp = ($shard_exp_rate - (.@shard_level * $difficulty_mf)) * (getmonsterinfo(killedrid, MOB_BASEEXP) / 100);
 
         // Provide a bonus based on shard_exp_boss_rate when a mini-boss or boss is killed.
         if(getmonsterinfo(killedrid, MOB_MODE) & 32)
