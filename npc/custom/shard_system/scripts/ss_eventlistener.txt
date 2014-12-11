@@ -8,16 +8,21 @@
  * SSExperienceHandler to manage experience distribution.
  */
 - script SSEventListener -1,{
+    function getItemID;
+    function getEquipSlots;
+
+    OnPCLoginEvent:
+        .@base_exp1 = BaseExp;
+        .@base_exp2 = .@base_exp1;
+    end;
+    
+    // ...
     OnNPCKillEvent:
-        if(SSEquipped == 1) {
-            if(getequipweaponlv(EQI_ACC_L))
-                callfunc("SSExperienceHandler", getequipid(EQI_ACC_L), EQI_ACC_L);
-            else
-                callfunc("SSExperienceHandler", getequipid(EQI_ACC_R), EQI_ACC_R);
-        }
-        
-        if(SSEquipped == 2) {
-            callfunc("SSExperienceHandler", getequipid(EQI_ACC_L), EQI_ACC_L);
-            callfunc("SSExperienceHandler", getequipid(EQI_ACC_R), EQI_ACC_R);
-        }
+        // ...
+        .@base_exp2 = BaseExp;
+        .@gained_exp = .@base_exp2 - .@base_exp1;
+
+        // ...
+        @base_exp1 = @base_exp2;
+    end;
 }
