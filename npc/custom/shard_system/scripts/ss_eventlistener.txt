@@ -1,44 +1,55 @@
 /**
- * When a shard is equipped, increase SSEquipped by 1.
- * When a shard is unequipped, decrease SSEquipped by 1.
- * SSEquipped determines how many shards are equipped.
+ * When a shard is equipped, find the equip slot, turn on
+ * the EQI_ACC_SLOT_SS flag where SLOT is L or R.
  *
- * When a monster dies invoke SSNPCKillEventListener script,
- * determine which shards require experience, then call
- * SSExperienceHandler to manage experience distribution.
+ * When a monster is killed my a PC, invoke SSEventListener
+ * to distribute experience. Invoke SSEventHandler to manage
+ * calculations.
  */
 - script SSEventListener -1,{
     function getItemID;
     function getEquipSlots;
     
-    
     OnPCLoginEvent:
-        if(SSEquipped) {
+        if(isEquipped) {
             @BaseExp = BaseExp;
             @NextBaseExp = NextBaseExp;
             @BaseLevel = BaseLevel;
         }
     end;
-
-    OnNPCKillEvent:
-        if(SSEquipped && (@BaseLevel == BaseLevel)) {
-            @GainedExp = BaseExp - @BasedExp;
-            @BaseExp = BaseExp;
-        }
+    
+    OnPCEquipEvent:
+        updateFlags;
+        @BaseExp = BaseExp;
+        @NextBaseExp = NextBaseExp;
+        @BaseLevel = BaseLevel;
+    end;
+    
+    OnPCUnequipEvent:
+        updateFlags;
     end;
 
     OnPCBaseLvUpEvent:
-        if(SSEquipped) {
+        if(isEquipped) {
             @GainedExp = BaseExp + (@NextBaseExp - @BaseExp);
             @BaseLevel = BaseLevel;
+            callfunc("SSEventHandler", @GainedExp);
         }
     end;
     
-    function    getItemID   {
+    OnNPCKillEvent:
+        if(isEquipped && (@BaseLevel == BaseLevel)) {
+            @GainedExp = BaseExp - @BasedExp;
+            @BaseExp = BaseExp;
+            callfunc("SSEventHandler", @GainedExp);
+        }
+    end;
+    
+    function    updateFlags {
         
     }
     
-    function    distributeExperience    {
-        
+    function    isEquipped {
+        return (EQI_ACC_L_S || EQI_ACC_R_S);
     }
 }
