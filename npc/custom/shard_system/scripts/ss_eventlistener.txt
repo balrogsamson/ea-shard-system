@@ -10,19 +10,29 @@
 - script SSEventListener -1,{
     function getItemID;
     function getEquipSlots;
-
+    
+    
     OnPCLoginEvent:
-        .@base_exp1 = BaseExp;
-        .@base_exp2 = .@base_exp1;
+        @BaseExp = BaseExp;
+        @NextBaseExp = NextBaseExp;
+    end;
+
+    OnNPCKillEvent:
+        if(@BaseExp < BaseExp && @BaseLevel < BaseLevel) {
+            @GainedExp = BaseExp - @BasedExp;
+            @BaseExp = BaseExp;
+        }
+    end;
+
+    OnPCBaseLvUpEvent:
+        @GainedExp = BaseExp + (@NextBaseExp - @BaseExp);
     end;
     
-    // ...
-    OnNPCKillEvent:
-        // ...
-        .@base_exp2 = BaseExp;
-        .@gained_exp = .@base_exp2 - .@base_exp1;
-
-        // ...
-        @base_exp1 = @base_exp2;
-    end;
+    function    getItemID   {
+        
+    }
+    
+    function    distributeExperience    {
+        
+    }
 }
