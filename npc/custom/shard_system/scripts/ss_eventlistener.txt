@@ -7,8 +7,8 @@
  * calculations.
  */
 - script SSEventListener -1,{
-    function getItemID;
-    function getEquipSlots;
+    function updateFlags;
+    function isEquipped;
     
     OnPCLoginEvent:
         if(isEquipped) {
@@ -17,7 +17,7 @@
             @BaseLevel = BaseLevel;
         }
     end;
-    
+
     OnPCEquipEvent:
         updateFlags;
         @BaseExp = BaseExp;
@@ -46,10 +46,11 @@
     end;
     
     function    updateFlags {
-        
+        EQI_ACC_L_SS = (getiteminfo(getequipid(EQI_ACC_L), 2) == 20 ? true : false);
+        EQI_ACC_R_SS = (getiteminfo(getequipid(EQI_ACC_R), 2) == 20 ? true : false);
     }
-    
+
     function    isEquipped {
-        return (EQI_ACC_L_S || EQI_ACC_R_S);
+        return EQI_ACC_L_SS || EQI_ACC_R_SS;
     }
 }
