@@ -18,7 +18,7 @@
     end;
 
     OnNPCKillEvent:
-        if(@BaseExp < BaseExp && @BaseLevel < BaseLevel) {
+        if(@BaseExp < BaseExp && @BaseLevel == BaseLevel) {
             @GainedExp = BaseExp - @BasedExp;
             @BaseExp = BaseExp;
         }
