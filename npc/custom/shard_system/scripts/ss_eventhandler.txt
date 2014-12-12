@@ -1,27 +1,28 @@
 /**
  * Provides experience to the shard then
  * upgrades it when level threshold is met.
- * @param .@shard_id The shard receiving experience.
  * @param .@equip_slot Equipment slot for clarification.
+ * @param .@base_exp Experience to be modified then provided.
  */
 function script SSEventHandler {
     // Local function declarations.
-    function updateExperience;
-    function getMobExperience;
+    function getExperience;
     function getNextExperience;
-    function upgradeShard;
-    function getPrimaryKey;
+    function updateExperience;
+    function getShardID;
+    function getShardKey;
     function getShardLevel;
+    function getShardPosition;
+    function upgradeShard;
 
     // Data definitions
-    .@shard_id = getarg(0);
-    .@equip_slot = getarg(1);
-    .@shard_key = getPrimaryKey;
+    .@base_exp = getExperience;
+    .@base_next_exp = getNextExperience;
+    .@shard_id = getShardID;
+    .@shard_key = getShardKey;
     .@shard_level = getShardLevel;
-    .@mob_exp = getMobExperience;
-    .@next_exp = getNextExperience;
+    .@shard_pos = getShardPosition;
 
-    // MAIN CALL
     updateExperience;
     return;
 
@@ -52,8 +53,6 @@ function script SSEventHandler {
     /**
      * Upgrade the shard and provide player with the next
      * level of the item.
-     * TODO: Eventually use getequipuniqueid code to single
-     * out shards based on their unique id rather than key.
      */
     function upgradeShard {
         // Unequip and delete the old shard.
@@ -69,8 +68,8 @@ function script SSEventHandler {
     /**
      * Returns the 32-bit primary key.
      */
-    function getPrimaryKey {
-        return (getequipcardid(.@equip_slot, 2) << 16) + getequipcardid(.@equip_slot, 3);
+    function getShardKey {
+        return (getequipcardid(.@shard_pos, 2) << 16) + getequipcardid(.@shard_pos, 3);
     }
 
     /**
@@ -80,6 +79,10 @@ function script SSEventHandler {
         return getiteminfo(.@shard_id, 13);
     }
     
+    function    getShardPosition    {
+        return getarg(
+    }
+    
     /**
      * Returns the last slain mob's experience.
      * TODO: Ensure -1 is never returned?
@@ -87,7 +90,7 @@ function script SSEventHandler {
      * TODO: Recreate this to use BaseExp, NextBaseExp and the difference
      * between monster kills. This will be more accurate.
      */
-    function getMobExperience {
+    function getExperience {
         // Make sure shard_exp_rate is not negative or zero.
         if(($shard_exp_rate - (.@shard_level * $difficulty_mf)) <= 0)
             $shard_exp_rate = .@shard_level + 1;
