@@ -1,6 +1,6 @@
 /**
  * When a shard is equipped, find the equip slot, turn on
- * the EQI_ACC_SLOT_SS flag where SLOT is L or R.
+ * the EQI_ACC_SLOT_FLAG where SLOT is L or R.
  *
  * When a monster is killed my a PC, invoke SSEventListener
  * to distribute experience. Invoke SSEventHandler to manage
@@ -12,8 +12,6 @@
     function updateFlags;
     function isEquipped;
     
-    // Events
-    // ======
     OnPCLoginEvent:
         if(isEquipped) {
             @BaseExp = BaseExp;
@@ -49,8 +47,6 @@
         }
     end;
 
-    // Functions
-    // =========
     function    distributeExperience {
         if(EQI_ACC_L_FLAG && EQI_ACC_R_FLAG) {
             callfunc("SSEventHandler", EQI_ACC_L, @GainedExp);
@@ -63,14 +59,17 @@
             else
                 callfunc("SSEventHandler", EQI_ACC_R, @GainedExp);
         }
+        
+        return;
     }
     
     function    updateFlags {
-        EQI_ACC_L_SS = (getiteminfo(getequipid(EQI_ACC_L), 2) == 20 ? true : false);
-        EQI_ACC_R_SS = (getiteminfo(getequipid(EQI_ACC_R), 2) == 20 ? true : false);
+        EQI_ACC_L_FLAG = (getiteminfo(getequipid(EQI_ACC_L), 2) == 20 ? true : false);
+        EQI_ACC_R_FLAG = (getiteminfo(getequipid(EQI_ACC_R), 2) == 20 ? true : false);
+        return;
     }
 
     function    isEquipped {
-        return EQI_ACC_L_SS || EQI_ACC_R_SS;
+        return EQI_ACC_L_FLAG || EQI_ACC_R_FLAG;
     }
 }
