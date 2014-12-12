@@ -13,19 +13,25 @@
     
     
     OnPCLoginEvent:
-        @BaseExp = BaseExp;
-        @NextBaseExp = NextBaseExp;
+        if(SSEquipped) {
+            @BaseExp = BaseExp;
+            @NextBaseExp = NextBaseExp;
+            @BaseLevel = BaseLevel;
+        }
     end;
 
     OnNPCKillEvent:
-        if(@BaseExp < BaseExp && @BaseLevel == BaseLevel) {
+        if(SSEquipped && (@BaseLevel == BaseLevel)) {
             @GainedExp = BaseExp - @BasedExp;
             @BaseExp = BaseExp;
         }
     end;
 
     OnPCBaseLvUpEvent:
-        @GainedExp = BaseExp + (@NextBaseExp - @BaseExp);
+        if(SSEquipped) {
+            @GainedExp = BaseExp + (@NextBaseExp - @BaseExp);
+            @BaseLevel = BaseLevel;
+        }
     end;
     
     function    getItemID   {
