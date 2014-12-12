@@ -7,9 +7,13 @@
  * calculations.
  */
 - script SSEventListener -1,{
+    // Function definitions.
+    function distributeExperience;
     function updateFlags;
     function isEquipped;
     
+    // Events
+    // ======
     OnPCLoginEvent:
         if(isEquipped) {
             @BaseExp = BaseExp;
@@ -33,7 +37,7 @@
         if(isEquipped) {
             @GainedExp = BaseExp + (@NextBaseExp - @BaseExp);
             @BaseLevel = BaseLevel;
-            callfunc("SSEventHandler", @GainedExp);
+            distributeExperience;
         }
     end;
     
@@ -41,9 +45,25 @@
         if(isEquipped && (@BaseLevel == BaseLevel)) {
             @GainedExp = BaseExp - @BasedExp;
             @BaseExp = BaseExp;
-            callfunc("SSEventHandler", @GainedExp);
+            distributeExperience;
         }
     end;
+
+    // Functions
+    // =========
+    function    distributeExperience {
+        if(EQI_ACC_L_FLAG && EQI_ACC_R_FLAG) {
+            callfunc("SSEventHandler", EQI_ACC_L, @GainedExp);
+            callfunc("SSEventHandler", EQI_ACC_R, @GainedExp);
+        }
+        
+        if(EQI_ACC_L_FLAG || EQI_ACC_R_FLAG) {
+            if(EQI_ACC_L_FLAG)
+                callfunc("SSEventHandler", EQI_ACC_L, @GainedExp);
+            else
+                callfunc("SSEventHandler", EQI_ACC_R, @GainedExp);
+        }
+    }
     
     function    updateFlags {
         EQI_ACC_L_SS = (getiteminfo(getequipid(EQI_ACC_L), 2) == 20 ? true : false);
