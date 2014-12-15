@@ -40,6 +40,8 @@
         
         if(isEquipped && (@BaseLevel < BaseLevel)) {
             @GainedExp = BaseExp + (@NextBaseExp - @BaseExp);
+            @BaseExp = BaseExp;
+            @NextBaseExp = NextBaseExp;
             @BaseLevel = BaseLevel;
             distributeExperience;
         }
