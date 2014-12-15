@@ -30,19 +30,17 @@
     OnPCUnequipEvent:
         updateFlags;
     end;
-
-    OnPCBaseLvUpEvent:
-        if(isEquipped) {
-            @GainedExp = BaseExp + (@NextBaseExp - @BaseExp);
-            @BaseLevel = BaseLevel;
-            distributeExperience;
-        }
-    end;
     
     OnNPCKillEvent:
         if(isEquipped && (@BaseLevel == BaseLevel)) {
             @GainedExp = BaseExp - @BasedExp;
             @BaseExp = BaseExp;
+            distributeExperience;
+        } 
+        
+        if(isEquipped && (@BaseLevel < BaseLevel)) {
+            @GainedExp = BaseExp + (@NextBaseExp - @BaseExp);
+            @BaseLevel = BaseLevel;
             distributeExperience;
         }
     end;
