@@ -2,7 +2,7 @@
 -- Table structure for shard items.
 -- Tracks shard creation and leveling.
 --
-CREATE TABLE IF NOT EXISTS 'shard_log' (
+CREATE TABLE IF NOT EXISTS 'shard_db' (
     'id' int(11) unsigned NOT NULL autoincrement,
     'char_id' int(11) unsigned NOT NULL default '0',
     'char_name' varchar(30) NOT NULL default '',
