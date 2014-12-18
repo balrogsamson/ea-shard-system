@@ -1,5 +1,0 @@
-// Find the correct shard in inventory using
-// the shard key and item id.
--	script	SSEquipShard	{
-    
-}
