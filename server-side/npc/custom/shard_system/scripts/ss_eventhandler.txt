@@ -103,7 +103,7 @@ function script SSEventHandler {
 
         // Create and equip the new shard.
         callfunc("SSUpgradeShard", getarg(1), getarg(2));
-        callfunc("SSEquipShard", getarg(1), getarg(2));
+        equip getarg(0) + 1;
         return;
     }
 
