@@ -16,13 +16,13 @@ function    script  SSCreateShard {
 
     // Create a new shard entry in the DB.
     query_sql("
-        INSERT INTO `shard` (`char_id`, `char_name`, `item_id`, `date_created`)
-        VALUES("+ getchardid(0) +", '"+ escape_sql(strcharinfo(0)) +"', "+ .@shard_id +", GETDATE())
+        INSERT INTO `shard_db` (`char_id`, `char_name`, `item_id`, `item_name`, `date_created`)
+        VALUES("+ getchardid(0) +", '"+ escape_sql(strcharinfo(0)) +"', "+ .@shard_id +", '"+ escape_sql(getitemname(.@shard_id))) +"', GETDATE())
     ");
 
     // Select the newest shard entry.
     query_sql("
-        SELECT `id` FROM `shard`
+        SELECT `id` FROM `shard_db`
         WHERE `char_id` = "+ getcharid(0) +"
         ORDER BY `date_created` DESC LIMIT 1", .@shard_key
     );
