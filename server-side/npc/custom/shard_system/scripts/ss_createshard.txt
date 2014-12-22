@@ -32,6 +32,6 @@ function    script  SSCreateShard {
     .@card3 = .@shard_key[0] & 65535;
 
     // Provide the player with the shard.
-    getitem2 .@shard_id,1,1,0,0,-256,.@card2,.@card3,0;
+    getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
     return;
 }

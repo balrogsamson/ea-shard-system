@@ -48,7 +48,7 @@ function script SSEventHandler {
     );
 
     if(.@shard_exp[0] >= .@next_exp) {
-        upgradeShard(.@shard_id, .@shard_key);
+        upgradeShard(.@shard_id, .@shard_key, .@shard_pos);
     }
 
     // Success
@@ -97,14 +97,33 @@ function script SSEventHandler {
      * @param shard_pos     the shard's current equip position
      */
     function upgradeShard {
-        // Unequip and delete the old shard.
-        unequip getarg(0);
-        callfunc("SSDeleteShard", getarg(1), getarg(2));
+		// Data definitions.
+		.@shard_id = getarg(0);
+		.@shard_key = getarg(1);
+		.@shard_pos = getarg(2);
+		.@card2 = .@shard_key >> 16;
+		.@card3 = .@shard_key & 65535;
 
-        // Create and equip the new shard.
-        callfunc("SSUpgradeShard", getarg(1), getarg(2));
-        equip getarg(0) + 1;
-        return;
+		// Unequip and delete the old shard.
+		unequip .@shard_pos;
+		delitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
+		
+		// Update the database for the upgraded shard. Place
+		// the new shard into inventory then equip it.
+		query_sql("
+			UPDATE `shard_db`
+			SET item_id	= item_id + 1,
+				level = level + 1,
+				experience = 0
+			WHERE id = " + .@shard_key
+		");
+		
+		// Obtain and equip the new shard.
+		getitem2 (.@shard_id + 1),1,1,0,0,-255,.@card2,.@card3,0;
+		equip2 (.@shard_id + 1),1,1,0,0,-255,.@card2,.@card3,0;
+        
+		// Success!
+		return 0;
     }
 
     /**
