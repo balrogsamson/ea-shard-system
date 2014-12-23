@@ -1,7 +1,7 @@
 /**
  * Provides experience to the shard then upgrades it when level threshold is met.
- * @param .@shard_pos       equipment slot for clarification
- * @param .@shard_exp       experience to be modified then provided
+ * @param shard_pos       equipment slot for clarification
+ * @param shard_exp       experience to be modified then provided
  */
 function script SSEventHandler {
     // Local function declarations.
@@ -10,7 +10,6 @@ function script SSEventHandler {
     function getShardID;
     function getShardKey;
     function getShardLevel;
-    function getShardPosition;
     function upgradeShard;
 
     // Error handling
@@ -27,11 +26,12 @@ function script SSEventHandler {
     }
 
     // Data definitions.
-    .@shard_id = getShardID(getarg(0));
-    .@shard_key = getShardKey(getarg(0));
-    .@shard_lvl = getShardLevel(.@shard_id);
     .@shard_pos = getarg(0);
-    .@rated_exp = getExperience(getarg(1));
+    .@shard_exp = getarg(1);
+    .@shard_id = getShardID(.@shard_pos);
+    .@shard_key = getShardKey(.@shard_pos);
+    .@shard_lvl = getShardLevel(.@shard_id);
+    .@rated_exp = getExperience(.@base_exp);
     .@next_exp = getNextExperience(.@shard_lvl);
 
     // Store modified experience points for leveling up shards.
@@ -51,7 +51,7 @@ function script SSEventHandler {
         upgradeShard(.@shard_id, .@shard_key, .@shard_pos);
     }
 
-    // Success
+    // Success!
     return 0;
 
 
@@ -97,33 +97,30 @@ function script SSEventHandler {
      * @param shard_pos     the shard's current equip position
      */
     function upgradeShard {
-		// Data definitions.
-		.@shard_id = getarg(0);
-		.@shard_key = getarg(1);
-		.@shard_pos = getarg(2);
-		.@card2 = .@shard_key >> 16;
-		.@card3 = .@shard_key & 65535;
+        // Data definitions.
+        .@shard_id = getarg(0);
+        .@shard_key = getarg(1);
+        .@shard_pos = getarg(2);
 
-		// Unequip and delete the old shard.
-		unequip .@shard_pos;
-		delitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
-		
-		// Update the database for the upgraded shard. Place
-		// the new shard into inventory then equip it.
-		query_sql("
-			UPDATE `shard_db`
-			SET item_id	= item_id + 1,
-				level = level + 1,
-				experience = 0
-			WHERE id = " + .@shard_key
-		");
-		
-		// Obtain and equip the new shard.
-		getitem2 (.@shard_id + 1),1,1,0,0,-255,.@card2,.@card3,0;
-		equip2 (.@shard_id + 1),1,1,0,0,-255,.@card2,.@card3,0;
-        
-		// Success!
-		return 0;
+        // Segment the 32-bit value into 16-bit parts.
+        .@card2 = .@shard_key >> 16;
+        .@card3 = .@shard_key & 65535;
+
+        // Delete, obtain, and equip the new shard.
+        delequip .@shard_pos;
+        getitem2 (.@shard_id + 1),1,1,0,0,-255,.@card2,.@card3,0;
+        equip2 (.@shard_id + 1),1,1,0,0,-255,.@card2,.@card3,0;
+
+        query_sql("
+            UPDATE `shard_db`
+            SET item_id = item_id + 1,
+		             level = level + 1,
+		             experience = 0
+            WHERE id = " + .@shard_key
+        );
+
+		     // Success!
+        return 0;
     }
 
     /**
