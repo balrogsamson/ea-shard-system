@@ -1,8 +1,8 @@
 -	script	SSCommands	-1,{
     // ...
     OnInit:
-        bindatcmd("si", "SSCommands::OnCommand");
         bindatcmd("shardinfo", "SSCommands::OnCommand");
+        bindatcmd("createshard", "SSCommands::OnCommand");
     end;
     
     // ...
