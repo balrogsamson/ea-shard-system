@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `shard_db` (
-  `id` int(11) unsigned NOT NULL autoincrement,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `char_id` int(11) unsigned NOT NULL DEFAULT '0',
   `char_name` varchar(30) NOT NULL DEFAULT '',
   `item_id` int(11) unsigned NOT NULL DEFAULT '0',
