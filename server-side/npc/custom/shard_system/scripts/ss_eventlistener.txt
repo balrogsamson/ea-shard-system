@@ -49,8 +49,8 @@
 
     function    distributeExperience {
         if(EQI_ACC_L_FLAG && EQI_ACC_R_FLAG) {
-            callfunc("SSEventHandler", EQI_ACC_L, @GainedExp);
-            callfunc("SSEventHandler", EQI_ACC_R, @GainedExp);
+            callfunc("SSEventHandler", EQI_ACC_L, @GainedExp / 2);
+            callfunc("SSEventHandler", EQI_ACC_R, @GainedExp / 2);
         }
         
         if(EQI_ACC_L_FLAG || EQI_ACC_R_FLAG) {

@@ -9,13 +9,13 @@
     // Provide the invoking player with equipped shard information.
     // ItemID, ItemName, SBaseExp, SBaseNextLvl, DynamicBonus
     CmdShardInfo:
-    
+        
     end;
     
     // @createshard <item_id>, <key>
     // GM shard retrieval tool. Used to recreate shards for
     // any player who may have lost it. 
-    CmdShardInfo:
+    CmdCreateShard:
         
     end;
 }
