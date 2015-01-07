@@ -1,0 +1,37 @@
+/**
+ * Creates a new shard. This function is used to setup a
+ * new shard with a database entry and store its key.
+ * @param shard_id The id of the shard to give to the player.
+ * Ex. SSCreateShard(11564);
+ */
+function    script  SSCreateShard {
+    // Exception catch.
+    if(getarg(0,0) == 0 || getitemname(getarg(0,0)) == "null") {
+        debugmes "[Error] SSCreateShard called with invalid argument " + getarg(0,0);
+        return;
+    }
+
+    // Data definition.
+    .@shard_id = getarg(0);
+
+    // Create a new shard entry in the DB.
+    query_sql("
+        INSERT INTO `shard_db` (char_id, char_name, item_id, item_name, date_created)
+        VALUES("+ getchardid(0) +", '"+ escape_sql(strcharinfo(0)) +"', "+ .@shard_id +", '"+ escape_sql(getitemname(.@shard_id))) +"', GETDATE())
+    ");
+
+    // Select the newest shard entry.
+    query_sql("
+        SELECT id FROM `shard_db`
+        WHERE char_id = "+ getcharid(0) +"
+        ORDER BY date_created DESC LIMIT 1", .@shard_key
+    );
+
+    // Segment the 32-bit primary key.
+    .@card2 = .@shard_key[0] >> 16;
+    .@card3 = .@shard_key[0] & 65535;
+
+    // Provide the player with the shard.
+    getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
+    return;
+}

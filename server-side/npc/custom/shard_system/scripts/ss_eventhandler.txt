@@ -1,0 +1,149 @@
+/**
+ * Provides experience to the shard then upgrades it when level threshold is met.
+ * @param shard_pos       equipment slot for clarification
+ * @param shard_exp       experience to be modified then provided
+ */
+function script SSEventHandler {
+    // Local function declarations.
+    function getExperience;
+    function getNextExperience;
+    function getShardID;
+    function getShardKey;
+    function getShardLevel;
+    function upgradeShard;
+
+    // Error handling
+    if((getarg(0,0) != EQI_ACC_L) || (getarg(0,0) != EQI_ACC_R)) {
+        debugmes "[Error] invalid parameter at ss_eventhandler: " + getarg(0);
+        debugmes "Parameter must be EQI_ACC_L or EQI_ACC_R!";
+        return 1;
+    }
+    
+    if(getarg(1,0) <= 0) {
+        debugmes "[Error] invalid parameter at ss_eventhandler: " + getarg(1);
+        debugmes "Parameter must be greater than zero!";
+        return 1;
+    }
+
+    // Data definitions.
+    .@shard_pos = getarg(0);
+    .@shard_exp = getarg(1);
+    .@shard_id = getShardID(.@shard_pos);
+    .@shard_key = getShardKey(.@shard_pos);
+    .@shard_lvl = getShardLevel(.@shard_id);
+    .@rated_exp = getExperience(.@base_exp);
+    .@next_exp = getNextExperience(.@shard_lvl);
+
+    // Store modified experience points for leveling up shards.
+    query_sql("
+        UPDATE `shard_db`
+        SET experience = experience + "+ .@rated_exp +"
+        WHERE id = " + .@shard_key
+    );
+
+    // Invoke upgradeShard when the updated experience threshold is surpassed.
+    query_sql("
+        SELECT experience FROM `shard_db`
+        WHERE id = " + .@shard_key, .@shard_exp
+    );
+
+    if(.@shard_exp[0] >= .@next_exp) {
+        upgradeShard(.@shard_id, .@shard_key, .@shard_pos);
+    }
+
+    // Success!
+    return 0;
+
+
+    // MAIN FUNCTIONS
+    // ========================================================================
+    /**
+     * Returns the last slain mob's total experience.
+     * @param base_exp      experience gained by killing a monster
+     * TODO: Only accounts for < lv 100 atm. Fix it.
+     */
+    function getExperience {
+        // ...
+        .@base_exp = getarg(0) / 100;
+        .@base_pct = MAX_LEVEL - (BaseLevel + .@shard_level);
+        
+        // ...
+        if(.@base_pct < $base_pct)
+            .@base_pct = $base_pct;
+            
+        // ...
+        .@rated_exp = .@base_exp * .@base_pct;
+        
+        // ...
+        if(getmonsterinfo(killedrid, MOB_MODE) & 32)
+            .@rated_exp += (.@gained_exp / 100) * $shard_boss_rate;
+        
+        // ...
+        return .@rated_exp;
+    }
+
+    /**
+     * Returns the experience necessary to level.
+     * @param shard_lvl     the equipped shard level
+     */
+    function getNextExperience    {
+        return .@next_exp = getarg(0) * ($shard_base_exp * $server_rate);
+    }
+
+    /**
+     * Upgrade the shard and provide player with the next level of the item.
+     * @param shard_id      the equipped shard id
+     * @param shard_key     the equipped shard db key
+     * @param shard_pos     the shard's current equip position
+     */
+    function upgradeShard {
+        // Data definitions.
+        .@shard_id = getarg(0);
+        .@shard_key = getarg(1);
+        .@shard_pos = getarg(2);
+
+        // Segment the 32-bit value into 16-bit parts.
+        .@card2 = .@shard_key >> 16;
+        .@card3 = .@shard_key & 65535;
+
+        // Delete, obtain, and equip the new shard.
+        delequip .@shard_pos;
+        getitem2 (.@shard_id + 1),1,1,0,0,-255,.@card2,.@card3,0;
+        equip2 (.@shard_id + 1),1,1,0,0,-255,.@card2,.@card3,0;
+
+        query_sql("
+            UPDATE `shard_db`
+            SET item_id = item_id + 1,
+		             level = level + 1,
+		             experience = 0
+            WHERE id = " + .@shard_key
+        );
+
+		     // Success!
+        return 0;
+    }
+
+    /**
+     * Return the shard ID based on equip position.
+     * @param shard_pos     the shard's current equip position
+     */
+    function getShardID {
+        return getequipid(getarg(0));
+    }
+
+    /**
+     * Derives the database primary key from card slots.
+     * @param shard_pos     the shard's current equip position
+     */
+    function getShardKey {
+        return (getequipcardid(getarg(0), 2) << 16) + getequipcardid(getarg(0), 3);
+    }
+
+    /**
+     * Returns the shard level from the wLv field.
+     * @param shard_id      the equipped shard id
+     */
+    function getShardLevel {
+        return getiteminfo(getarg(0), 13);
+    }
+}

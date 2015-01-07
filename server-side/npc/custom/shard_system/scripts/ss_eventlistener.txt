@@ -1,0 +1,75 @@
+/**
+ * When a shard is equipped, find the equip slot, turn on
+ * the EQI_ACC_SLOT_FLAG where SLOT is L or R.
+ *
+ * When a monster is killed my a PC, invoke SSEventListener
+ * to distribute experience. Invoke SSEventHandler to manage
+ * calculations.
+ */
+- script SSEventListener -1,{
+    // Function definitions.
+    function distributeExperience;
+    function updateFlags;
+    function isEquipped;
+    
+    OnPCLoginEvent:
+        if(isEquipped) {
+            @BaseExp = BaseExp;
+            @NextBaseExp = NextBaseExp;
+            @BaseLevel = BaseLevel;
+        }
+    end;
+
+    OnPCEquipEvent:
+        updateFlags;
+        @BaseExp = BaseExp;
+        @NextBaseExp = NextBaseExp;
+        @BaseLevel = BaseLevel;
+    end;
+    
+    OnPCUnequipEvent:
+        updateFlags;
+    end;
+    
+    OnNPCKillEvent:
+        if(isEquipped && (@BaseLevel == BaseLevel)) {
+            @GainedExp = BaseExp - @BasedExp;
+            @BaseExp = BaseExp;
+            distributeExperience;
+        } 
+        
+        if(isEquipped && (@BaseLevel < BaseLevel)) {
+            @GainedExp = BaseExp + (@NextBaseExp - @BaseExp);
+            @BaseExp = BaseExp;
+            @NextBaseExp = NextBaseExp;
+            @BaseLevel = BaseLevel;
+            distributeExperience;
+        }
+    end;
+
+    function    distributeExperience {
+        if(EQI_ACC_L_FLAG && EQI_ACC_R_FLAG) {
+            callfunc("SSEventHandler", EQI_ACC_L, @GainedExp / 2);
+            callfunc("SSEventHandler", EQI_ACC_R, @GainedExp / 2);
+        }
+        
+        if(EQI_ACC_L_FLAG || EQI_ACC_R_FLAG) {
+            if(EQI_ACC_L_FLAG)
+                callfunc("SSEventHandler", EQI_ACC_L, @GainedExp);
+            else
+                callfunc("SSEventHandler", EQI_ACC_R, @GainedExp);
+        }
+        
+        return;
+    }
+    
+    function    updateFlags {
+        EQI_ACC_L_FLAG = (getiteminfo(getequipid(EQI_ACC_L), 2) == 20 ? true : false);
+        EQI_ACC_R_FLAG = (getiteminfo(getequipid(EQI_ACC_R), 2) == 20 ? true : false);
+        return;
+    }
+
+    function    isEquipped {
+        return EQI_ACC_L_FLAG || EQI_ACC_R_FLAG;
+    }
+}
