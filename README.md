@@ -1,7 +1,7 @@
 Ragnarok Online Shard System
 ============================
 Originally inspired by the materia system in Final Fantasy VII.<br>
-Recreated after seeing the scripts on ghxRO, an old private server.<br>
+Further inspired by the scripts on ghxRO, an old private server.<br>
 
 A shard is an expansion accessory that includes a leveling system. When a player kills a monster, a piece of the experience is added directly to the shard. When the experience threshold is met the item will level up. This can mean an increase in stats for the player, party, or guild. Each shard has a completed crystal form when maximum level is attained. The shard system has only been tested on rAthena server emulation software.
 
@@ -12,15 +12,15 @@ Data permanency across states is difficult in Athena. Although variable options 
 * Variable bonuses (eg. +1 STR - +5 STR)
 
 ### Shard Entries ###
-All shard database entries are required to include their name with level included. Each shard is typed as class 20. The wLv field is used to easily identify level without hassle. The _OnEquip_ and _OnUnequip_ fields will contain an incrementing and deincrementing permanent character variable, respectively. Each shard is planned to have a script updating the current holder, but this has been postponed.<br>
+All shard database entries are required to include their name with level included. Each shard is typed as class 20. The wLv field is used to easily identify level without hassle. The _OnEquip_ and _OnUnequip_ fields will contain an event that will handle setup. Each shard is planned to have a script updating the current holder, but will not be in the release candidate.<br>
 
 ```
-25565,Burning_Shard_LV1,Burning Shard LV1,20,,,100,,,,1,0xFFFFFFFF,11,2,136,1,50,,,{ // item script },{ SSEquipped += 1; },{ SSEquipped -= 1; }
+25565,Burning_Shard_LV1,Burning Shard LV1,20,,,100,,,,1,0xFFFFFFFF,11,2,136,1,50,,,{ // item script },{ doevent "SSEventListener::OnPCEquipEvent"; },{ doevent "SSEventListener::OnPCUnequipEvent"; }
 ```
 
 ### TODO ###
 * Create an atcommand that will provide players with data on their equipped shards (look into _bindatcmd_).
 * Create the database files for easy addition.
 * Separate client-side and server-side folders for easy addition.
-* Work on the ToLevel variable and associated formulae.
+* Work on the ToLevel variable and associated formulae. [Almost done!]
 * Eventually merge functions into file groupings.
