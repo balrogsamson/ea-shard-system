@@ -3,7 +3,7 @@
  * @param shard_pos       equipment slot for clarification
  * @param shard_exp       experience to be modified then provided
  */
-function script SSEventHandler {
+function	script	SSEventHandler	{
     // Local function declarations.
     function getExperience;
     function getNextExperience;
@@ -31,23 +31,16 @@ function script SSEventHandler {
     .@shard_id = getShardID(.@shard_pos);
     .@shard_key = getShardKey(.@shard_pos);
     .@shard_lvl = getShardLevel(.@shard_id);
-    .@rated_exp = getExperience(.@base_exp);
+    .@rated_exp = getExperience(.@shard_exp); //I think you meant this?
     .@next_exp = getNextExperience(.@shard_lvl);
 
     // Store modified experience points for leveling up shards.
-    query_sql("
-        UPDATE `shard_db`
-        SET experience = experience + "+ .@rated_exp +"
-        WHERE id = " + .@shard_key
-    );
+    query_sql("UPDATE `shard_db` SET experience = experience + "+ .@rated_exp +" WHERE id = " + .@shard_key);
 
     // Invoke upgradeShard when the updated experience threshold is surpassed.
-    query_sql("
-        SELECT experience FROM `shard_db`
-        WHERE id = " + .@shard_key, .@shard_exp
-    );
+    query_sql("SELECT `experience` FROM `shard_db` WHERE id = " + .@shard_key, .@shard_exp);
 
-    if(.@shard_exp[0] >= .@next_exp) {
+    if(.@shard_exp >= .@next_exp) {
         upgradeShard(.@shard_id, .@shard_key, .@shard_pos);
     }
 
@@ -111,15 +104,7 @@ function script SSEventHandler {
         getitem2 (.@shard_id + 1),1,1,0,0,-255,.@card2,.@card3,0;
         equip2 (.@shard_id + 1),1,1,0,0,-255,.@card2,.@card3,0;
 
-        query_sql("
-            UPDATE `shard_db`
-            SET item_id = item_id + 1,
-		             level = level + 1,
-		             experience = 0
-            WHERE id = " + .@shard_key
-        );
-
-		     // Success!
+        query_sql("UPDATE `shard_db` SET `item_id` = `item_id` + 1, `level` = `level` + 1, `experience` = 0 WHERE id = " + .@shard_key); // Success!
         return 0;
     }
 

@@ -6,14 +6,14 @@
  * to distribute experience. Invoke SSEventHandler to manage
  * calculations.
  */
-- script SSEventListener -1,{
+-	script	SSEventListener	-1,{
     // Function definitions.
     function distributeExperience;
     function updateFlags;
-    function isEquipped;
+    function shardEquipped;
     
     OnPCLoginEvent:
-        if(isEquipped) {
+        if( shardEquipped() ) {
             @BaseExp = BaseExp;
             @NextBaseExp = NextBaseExp;
             @BaseLevel = BaseLevel;
@@ -21,29 +21,29 @@
     end;
 
     OnPCEquipEvent:
-        updateFlags;
+        updateFlags();
         @BaseExp = BaseExp;
         @NextBaseExp = NextBaseExp;
         @BaseLevel = BaseLevel;
     end;
     
     OnPCUnequipEvent:
-        updateFlags;
+        updateFlags();
     end;
     
     OnNPCKillEvent:
-        if(isEquipped && (@BaseLevel == BaseLevel)) {
+        if(shardEquipped() && (@BaseLevel == BaseLevel)) {
             @GainedExp = BaseExp - @BasedExp;
             @BaseExp = BaseExp;
             distributeExperience;
         } 
         
-        if(isEquipped && (@BaseLevel < BaseLevel)) {
+        if(shardEquipped() && (@BaseLevel < BaseLevel)) {
             @GainedExp = BaseExp + (@NextBaseExp - @BaseExp);
             @BaseExp = BaseExp;
             @NextBaseExp = NextBaseExp;
             @BaseLevel = BaseLevel;
-            distributeExperience;
+            distributeExperience();
         }
     end;
 
@@ -51,6 +51,7 @@
         if(EQI_ACC_L_FLAG && EQI_ACC_R_FLAG) {
             callfunc("SSEventHandler", EQI_ACC_L, @GainedExp / 2);
             callfunc("SSEventHandler", EQI_ACC_R, @GainedExp / 2);
+			return; //Otherwise it'll give 1.5x exp to left accessory, triggering the following if as well.
         }
         
         if(EQI_ACC_L_FLAG || EQI_ACC_R_FLAG) {
@@ -69,7 +70,7 @@
         return;
     }
 
-    function    isEquipped {
+    function    shardEquipped {
         return EQI_ACC_L_FLAG || EQI_ACC_R_FLAG;
     }
 }
