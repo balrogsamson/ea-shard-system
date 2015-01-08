@@ -1,21 +1,170 @@
 -	script	SSCommands	-1,{
-    // ...
-    OnInit:
-        bindatcmd("shardinfo", "SSCommands::OnCommand");
-        bindatcmd("createshard", "SSCommands::OnCommand");
+end;
+
+OnInit:
+		function getShardKey;
+        bindatcmd("shardinfo", "SSCommands::OnInfo",0,100,1);
+        bindatcmd("remakeshard", "SSCommands::OnRemake",70,100,1);
+		bindatcmd("newshard","SSCommands::OnNewShard",70,100,1);
     end;
-    
+	
+	function getShardKey {
+        return (getequipcardid(getarg(0), 2) << 16) + getequipcardid(getarg(0), 3);
+    }
+
     // @shardinfo
     // Provide the invoking player with equipped shard information.
     // ItemID, ItemName, SBaseExp, SBaseNextLvl, DynamicBonus
-    CmdShardInfo:
-        
+	// Add into config time that people will hsve to wait before getting info again
+	// Option with variable $ShardInfoWait
+	// In the mean time it'll return previous acquired info;
+	// Done to lessen the impact on SQL
+	// Making it 2 minutes on default.
+OnInfo:
+	if( !$ShardInfoWait ) $ShardInfoWait = 2*60; //2 minutes on default
+	if( !EQI_ACC_L_FLAG && !EQI_ACC_R_FLAG ) {
+		dispbottom "You don't have any Shard equipped.";
+		end;
+	}
+	if( gettimetick(2) > @lastshardinfo + $ShardInfoWait ) {
+		//Update info
+		@LeftFlag = EQI_ACC_L_FLAG;
+		if( EQI_ACC_L_FLAG ) {
+			.@key = getShardKey(EQI_ACC_L);
+			query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@L_shardID,@L_shardName$,@L_shardExp,@L_shardLevel);
+		}
+		@RightFlag = EQI_ACC_R_FLAG;
+		if( EQI_ACC_R_FLAG ) {
+			.@key = getShardKey(EQI_ACC_R);
+			query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
+		}
+		@lastshardinfo = gettimetick(2);
+	} else {
+		dispbottom "Old information is presented. Please wait " + callfunc("Time2Str",@lastshardinfo + $ShardInfoWait) + " to get refreshed information.";
+	}
+	
+	if( @LeftFlag ) {
+		dispbottom "Left Accessory Slot Shard Information.";
+		dispbottom "Item ID: " + @L_shardID;
+		dispbottom "Name: " + @L_shardName$;
+		dispbottom "Experience Points: " + @L_shardExp;
+		dispbottom "Experience for next level: " + (@L_shardLevel * $shard_base_exp * $server_rate);
+		// dispbottom "Applied Bonus: " + ???;
+	}
+	if( @RightFlag ) {
+		dispbottom "Right Accessory Slot Shard Information.";
+		dispbottom "Item ID: " + @R_shardID;
+		dispbottom "Name: " + @R_shardName$;
+		dispbottom "Experience Points: " + @R_shardExp;
+		dispbottom "Experience for next level: " + (@R_shardLevel * $shard_base_exp * $server_rate);
+		// dispbottom "Applied Bonus: " + ???;
+	}
     end;
-    
-    // @createshard <item_id>, <key>
+
+    // @remakeshard <key>
     // GM shard retrieval tool. Used to recreate shards for
-    // any player who may have lost it. 
-    CmdCreateShard:
-        
+    // any player who may have lost it.
+OnRemake:
+	if( .@atcmd_numparameters != 1 ) {
+		dispbottom "Usage: @createshard <numerical key>";
+		end;
+	}
+	
+	.@key = atoi(.@atcmd_parameters$[0]);
+	if( !.@key ) {
+		dispbottom "Invalid key provided.";
+		end;
+	}
+	
+	if( query_sql("SELECT (`owner_cid`, `owner_aid`, `item_id`) FROM `shard_db` WHERE `id` = " + .@key,.@cid,.@aid,.@shard_id) < 1 ) {
+		dispbottom "There's no shard with such key.";
+		end;
+	}
+	
+	if( !attachrid(.@aid) ) {
+		dispbottom "Player that created that shard is offline.";
+		end;
+	}
+	
+	if( getcharid(0) != .@cid ) {
+		dispbottom "Player is on the wrong character, but the account is right.";
+		end;
+	}
+	
+	.@card2 = .@key >> 16;
+	.@card3 = .@key & 65535;
+	
+	if( countitem2(.@shard_id,1,0,0,-255,.@card2,.@card3,0) ) {
+		dispbottom "Player still has the old shard in his possession.";
+		end;
+	}
+	
+	getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
     end;
+
+	// @newshard <Item ID>,{<charID>}
+    // GM new shard creation. Created shard <Item ID>
+	// either on rewoking player, or character whose ID is provided.
+OnNewShard:
+	if( .@atcmd_numparameters < 1 || .@atcmd_numparameters > 2 ) {
+		dispbottom "Usage: @newshard <Item ID>,{<charID>}";
+		dispbottom "Rewoking player will get the shard if no CharID provided.";
+		end;
+	}
+	
+	.@shard_id = atoi(.@atcmd_parameters$[0]);
+	if( !.@shard_id || getitemname(.@shard_id) == "null" ) {
+		dispbottom "There's no such item ID.";
+		end;
+	}
+	
+	.@flag = .@atcmd_parameters$[1]?1:0;	
+	
+	switch(.@flag) {
+	case 1: //CharID provided
+		.@cid = atoi(.@atcmd_parameters$[1]);
+		if( !.@cid ) {
+			dispbottom "Invalid CharID provided.";
+			end;
+		}
+		
+		if( query_sql("SELECT (`account_id`,`name`) FROM `char` WHERE `char_id` = " + .@cid, .@aid, .@name$) < 1 ) {
+			dispbottom "There is no character with such charID.";
+			end;
+		}
+		
+		if( !attachrid(.@aid) ) {
+			dispbottom "Destined character is offline.";
+			end;
+		}
+		
+		if( getcharid(0) != .@cid ) {
+			dispbottom "Destined player is on the right account, but on the wrong character.";
+			end;
+		}
+		break;
+	case 0:
+		.@cid = getcharid(0);
+		.@aid = getcharid(3); 
+		.@name$ = strcharinfo(PC_NAME);
+		break;
+	default:
+		dispbottom "An error occured. Please retry the command.";
+		end;
+	}
+	
+	// Create a new shard entry in the DB.
+    query_sql("INSERT INTO `shard_db` (`owner_cid`, `owner_name`, `owner_aid`, `item_id`, `item_name`, `date_created`) VALUES("+ .@cid +", '"+ escape_sql(.@name$) +"', "+ .@aid +", "+ .@shard_id +", '"+ escape_sql(getitemname(.@shard_id)) +"', GETDATE()) ");
+
+    // Select the newest shard entry.
+    query_sql("SELECT `id` FROM `shard_db` WHERE `owner_id` = "+ .@cid +" ORDER BY `date_created` DESC LIMIT 1", .@shard_key);
+
+    // Segment the 32-bit primary key.
+    .@card2 = .@shard_key[0] >> 16;
+    .@card3 = .@shard_key[0] & 65535;
+
+    // Provide the player with the shard.
+    getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
+    return;
+	end;
 }
