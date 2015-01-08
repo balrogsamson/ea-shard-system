@@ -13,7 +13,7 @@
     function shardEquipped;
     
     OnPCLoginEvent:
-        if( shardEquipped() ) {
+        if(shardEquipped()) {
             @BaseExp = BaseExp;
             @NextBaseExp = NextBaseExp;
             @BaseLevel = BaseLevel;
@@ -51,17 +51,14 @@
         if(EQI_ACC_L_FLAG && EQI_ACC_R_FLAG) {
             callfunc("SSEventHandler", EQI_ACC_L, @GainedExp / 2);
             callfunc("SSEventHandler", EQI_ACC_R, @GainedExp / 2);
-			return; //Otherwise it'll give 1.5x exp to left accessory, triggering the following if as well.
+			return;
         }
         
+        // Hey, may work?
         if(EQI_ACC_L_FLAG || EQI_ACC_R_FLAG) {
-            if(EQI_ACC_L_FLAG)
-                callfunc("SSEventHandler", EQI_ACC_L, @GainedExp);
-            else
-                callfunc("SSEventHandler", EQI_ACC_R, @GainedExp);
+            callfunc("SSEventHandler", (EQI_ACC_L_FLAG ? EQI_ACC_L : EQI_ACC_R), @GainedExp);
+            return;
         }
-        
-        return;
     }
     
     function    updateFlags {
