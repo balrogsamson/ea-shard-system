@@ -136,18 +136,18 @@ end;
 			break;
 		}
 	
-	// Create a new shard entry in the DB.
-    query_sql("INSERT INTO `shard_db` (`owner_cid`, `owner_name`, `owner_aid`, `item_id`, `item_name`, `date_created`) VALUES("+ .@cid +", '"+ escape_sql(.@name$) +"', "+ .@aid +", "+ .@shard_id +", '"+ escape_sql(getitemname(.@shard_id)) +"', GETDATE()) ");
-
-    // Select the newest shard entry.
-    query_sql("SELECT `id` FROM `shard_db` WHERE `owner_id` = "+ .@cid +" ORDER BY `date_created` DESC LIMIT 1", .@shard_key);
-
-    // Segment the 32-bit primary key.
-    .@card2 = .@shard_key[0] >> 16;
-    .@card3 = .@shard_key[0] & 65535;
-
-    // Provide the player with the shard.
-    getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
-    return;
+		// Create a new shard entry in the DB.
+	    query_sql("INSERT INTO `shard_db` (`owner_cid`, `owner_name`, `owner_aid`, `item_id`, `item_name`, `date_created`) VALUES("+ .@cid +", '"+ escape_sql(.@name$) +"', "+ .@aid +", "+ .@shard_id +", '"+ escape_sql(getitemname(.@shard_id)) +"', GETDATE()) ");
+	
+	    // Select the newest shard entry.
+	    query_sql("SELECT `id` FROM `shard_db` WHERE `owner_id` = "+ .@cid +" ORDER BY `date_created` DESC LIMIT 1", .@shard_key);
+	
+	    // Segment the 32-bit primary key.
+	    .@card2 = .@shard_key[0] >> 16;
+	    .@card3 = .@shard_key[0] & 65535;
+	
+	    // Provide the player with the shard.
+	    getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
+	    return;
 	end;
 }
