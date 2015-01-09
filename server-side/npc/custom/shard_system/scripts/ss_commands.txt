@@ -101,7 +101,7 @@ end;
 	// either on rewoking player, or character whose ID is provided.
 	OnNewShard:
 		if( .@atcmd_numparameters < 1 || .@atcmd_numparameters > 2 ) {
-			dispbottom "Usage: @newshard <Item ID>,{<charID/Name>}";
+			dispbottom "Usage: @newshard <Item ID>,{<charID>}";
 			dispbottom "Rewoking player will get the shard if no CharID provided.";
 			end;
 		}
