@@ -81,7 +81,7 @@ end;
 			end;
 		}
 	
-		if( query_sql("SELECT (`item_id`) FROM `shard_db` WHERE `id` = " + .@key,.@shard_id) < 1 ) {
+		if( query_sql("SELECT (`item_id`,`owner_cid`,`wielder_cid`) FROM `shard_db` WHERE `id` = " + .@key,.@shard_id,.@ocid,.@wcid) < 1 ) {
 			dispbottom "There's no shard with such key.";
 			end;
 		}
@@ -90,6 +90,10 @@ end;
 		.@card3 = .@key & 65535;
 		
 		getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
+		
+		dispbottom "Shard recreated. Last stored information:";
+		dispbottom "Wielder CharID: " + .@wcid + " Creator CharID: " + .@ocid;
+		dispbottom "Please recheck the information and make sure that previous copy is indeed lost before giving the item to the player.";
 	end;
 
 	// @newshard <Item ID>,{<charID>}
