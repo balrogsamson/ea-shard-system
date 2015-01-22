@@ -3,9 +3,10 @@ end;
 
 	OnInit:
 		function getShardKey;
-        bindatcmd("shardinfo", "SSCommands::OnInfo",0,100,1);
-        bindatcmd("remakeshard", "SSCommands::OnRemake",70,100,1);
+		bindatcmd("shardinfo", "SSCommands::OnInfo",0,100,1);
+		bindatcmd("remakeshard", "SSCommands::OnRemake",70,100,1);
 		bindatcmd("newshard", "SSCommands::OnNewShard",70,100,1);
+		bindatcmd("listshards","SSCommands::OnListShards",60,100,1);
     end;
 	
 	function getShardKey {
@@ -43,26 +44,26 @@ end;
 				query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
 			}
 			@lastshardinfo = gettimetick(2);
-	} else {
-		dispbottom "Old information is presented. Please wait " + callfunc("Time2Str",@lastshardinfo + $ShardInfoWait) + " to get refreshed information.";
-	}
-	
-	if( @LeftFlag ) {
-		dispbottom "Left Accessory Slot Shard Information.";
-		dispbottom "Item ID: " + @L_shardID;
-		dispbottom "Name: " + @L_shardName$;
-		dispbottom "Experience Points: " + @L_shardExp;
-		dispbottom "Experience for next level: " + (@L_shardLevel * $shard_base_exp * $server_rate);
-		// dispbottom "Applied Bonus: " + ???;
-	}
-	if( @RightFlag ) {
-		dispbottom "Right Accessory Slot Shard Information.";
-		dispbottom "Item ID: " + @R_shardID;
-		dispbottom "Name: " + @R_shardName$;
-		dispbottom "Experience Points: " + @R_shardExp;
-		dispbottom "Experience for next level: " + (@R_shardLevel * $shard_base_exp * $server_rate);
-		// dispbottom "Applied Bonus: " + ???;
-	}
+		} else {
+			dispbottom "Old information is presented. Please wait " + callfunc("Time2Str",@lastshardinfo + $ShardInfoWait) + " to get refreshed information.";
+		}
+		
+		if( @LeftFlag ) {
+			dispbottom "Left Accessory Slot Shard Information.";
+			dispbottom "Item ID: " + @L_shardID;
+			dispbottom "Name: " + @L_shardName$;
+			dispbottom "Experience Points: " + @L_shardExp;
+			dispbottom "Experience for next level: " + (@L_shardLevel * $shard_base_exp * $server_rate);
+			// dispbottom "Applied Bonus: " + ???;
+		}
+		if( @RightFlag ) {
+			dispbottom "Right Accessory Slot Shard Information.";
+			dispbottom "Item ID: " + @R_shardID;
+			dispbottom "Name: " + @R_shardName$;
+			dispbottom "Experience Points: " + @R_shardExp;
+			dispbottom "Experience for next level: " + (@R_shardLevel * $shard_base_exp * $server_rate);
+			// dispbottom "Applied Bonus: " + ???;
+		}
     end;
 
     // @remakeshard <key>
@@ -70,7 +71,7 @@ end;
     // any player who may have lost it.
 	OnRemake:
 		if( .@atcmd_numparameters != 1 ) {
-			dispbottom "Usage: @createshard <numerical key>";
+			dispbottom "Usage: @remakeshard <numerical key>";
 			end;
 		}
 	
@@ -80,30 +81,19 @@ end;
 			end;
 		}
 	
-		if( query_sql("SELECT (`owner_cid`, `owner_aid`, `item_id`) FROM `shard_db` WHERE `id` = " + .@key,.@cid,.@aid,.@shard_id) < 1 ) {
+		if( query_sql("SELECT (`item_id`,`owner_cid`,`wielder_cid`) FROM `shard_db` WHERE `id` = " + .@key,.@shard_id,.@ocid,.@wcid) < 1 ) {
 			dispbottom "There's no shard with such key.";
-			end;
-		}
-	
-		if( !attachrid(.@aid) ) {
-			dispbottom "Player that created that shard is offline.";
-			end;
-		}
-		
-		if( getcharid(0) != .@cid ) {
-			dispbottom "Player is on the wrong character, but the account is right.";
 			end;
 		}
 	
 		.@card2 = .@key >> 16;
 		.@card3 = .@key & 65535;
 		
-		if( countitem2(.@shard_id,1,0,0,-255,.@card2,.@card3,0) ) {
-			dispbottom "Player still has the old shard in his possession.";
-			end;
-		}
-		
 		getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
+		
+		dispbottom "Shard recreated. Last stored information:";
+		dispbottom "Wielder CharID: " + .@wcid + " Creator CharID: " + .@ocid;
+		dispbottom "Please recheck the information and make sure that previous copy is indeed lost before giving the item to the player.";
 	end;
 
 	// @newshard <Item ID>,{<charID>}
@@ -125,6 +115,31 @@ end;
 		.@flag = .@atcmd_parameters$[1]?1:0;	
 	
 		switch(.@flag) {
+			case 1: //CharID provided
+				.@cid = atoi(.@atcmd_parameters$[1]);
+				if( !.@cid ) {
+					dispbottom "Invalid CharID provided.";
+					end;
+				}
+				
+				if( query_sql("SELECT (`account_id`,`name`) FROM `char` WHERE `char_id` = " + .@cid, .@aid, .@name$) < 1 ) {
+					dispbottom "There is no character with such charID/Name.";
+					end;
+				}
+				
+				.@gmaid = playerattached();
+				if( !attachrid(.@aid) ) {
+					if( attachrid(.@gmaid) )
+						dispbottom "Destined character is offline.";
+					end;
+				}
+				
+				if( getcharid(0) != .@cid ) {
+					if( attachrid(.@gmaid) )
+						dispbottom "Destined player is on the right account, but on the wrong character.";
+					end;
+				}
+			break;
 			case 0:
 				.@cid = getcharid(0);
 				.@aid = getcharid(3); 
@@ -149,5 +164,46 @@ end;
 	    // Provide the player with the shard.
 	    getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
 	    return;
+	end;
+	
+	// @listshards <Name/CharID>;
+	// Provides info on shards created(in the future wielded)
+	// by the player under provided name/CharID
+	// Limited to 5 characters/25 shards per character.
+	OnListShards:
+		if( .@atcmd_numparameters != 1 ) {
+			dispbottom "Usage: @listshards <Name/CharID>";
+			dispbottom "For better results use CharID over Name.";
+			end;
+		}
+		
+		.@desc$ = .@atcmd_parameters$[1];
+		if( .@count = query_sql("SELECT (`account_id`,`char_id`,`name`) FROM `char` WHERE `char_id` = " + atoi(.@desc$) + " OR `name` LIKE '%" + escape_sql(.@desc$) + "%'",.@aid,.@cid,.@name$) < 1 ) {
+			dispbottom "No characters with such name or charID found.";
+			end;
+		}
+		
+		if( .@count > 5 ) {
+			dispbottom "Results for first 5 found players will be shown.";
+			.@count = 5;
+		}
+		
+		for( .@i = 0; .@i < .@count; .@i++) {
+			dispbottom "Character #" + .@i + ". ";
+			dispbottom "Name: " + .@name$[.@i] + " CharID: " + .@cid[.@i] + " AccID:" + .@aid[.@i];
+			if( .@count2 = query_sql("SELECT (`id`,`item_id`,`item_name`,`level`,`owner_cid`,`wielder_cid`) FROM `shard_db` WHERE `owner_cid` = " + .@cid[.@i] + " OR `wielder_cid` = " + .@cid[.@i] + " ORDER BY `date_created` DESC",.@sid,.@siid,.@sin$,.@sl,.@ocid,.@wcid) < 1 ) {
+				dispbottom "      Player has no registered created or wielded shards.";
+				continue;
+			} else {
+				if( .@count2 > 25 ) {
+					dispbottom "      Only last 25 found shards will be shown. For more info please refer to your Head GM/Developer.";
+					.@count2 = 25;
+				}
+				for( .@a = 0; .@a < .@count2; .@a++ ) {
+					dispbottom "      Shard Key: " + .@sid[.@a] + " Shard Level: " + .@sl[.@a] + " Item ID: " + .@siid[.@a] + " Item Name: " + .@sin$[.@a];
+					dispbottom "      Wielder CharID: " + .@wcid[.@a] + " Creator CharID: " + .@ocid[.@a];
+				}
+			}
+		}
 	end;
 }
