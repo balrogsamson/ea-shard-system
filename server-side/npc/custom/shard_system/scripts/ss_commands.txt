@@ -1,9 +1,9 @@
 -	script	SSCommands	-1,{
 end;
-	OnInit:
-		bindatcmd("shardinfo", "SSCommands::OnDisplayInfo",0,100,1);
-		bindatcmd("newshard", "SSCommands::OnCreateShard",70,100,1);
-		bindatcmd("listshards","SSCommands::OnListShards",60,100,1);
+    OnInit:
+        bindatcmd("shardinfo", "SSCommands::OnDisplayInfo",0,100,1);
+        bindatcmd("newshard", "SSCommands::OnCreateShard",70,100,1);
+        bindatcmd("listshards","SSCommands::OnListShards",60,100,1);
     end;
 
     /**
@@ -13,41 +13,41 @@ end;
      * command usage for m minutes.
      * TODO: Incomplete
      */
-	OnDisplayInfo:
-	    if(MUTED) {
-	        dispbottom "Please wait n seconds and try again.";
-	        end;
-	    }
+    OnDisplayInfo:
+        if(MUTED) {
+            dispbottom "Please wait n seconds and try again.";
+            end;
+        }
 
-		if(!EQI_ACC_L_FLAG && !EQI_ACC_R_FLAG) {
-			dispbottom "No shards are equipped on your character.";
-			end;
-		}
-		
-		if(EQI_ACC_L_FLAG) {
-		    // Query the database
-		    .@shardkey = getequipcardid(EQI_ACC_L, 2) << 16) + getequipcardid(EQI_ACC_L, 3);
-			query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
+        if(!EQI_ACC_L_FLAG && !EQI_ACC_R_FLAG) {
+            dispbottom "No shards are equipped on your character.";
+            end;
+        }
 
-		    // Display information to the player.
-			dispbottom "Accessory Slot Shard Information.";
-			dispbottom "Item ID: " + .@var1;
-			dispbottom "Item Name: " + .@var2;
-			dispbottom "Experience Points: " + .@var3 + " / " + .@var4;
-		}
-		
-		if(EQI_ACC_R_FLAG) {
-		    // Query the database
-		    .@shardkey = getequipcardid(EQI_ACC_R, 2) << 16) + getequipcardid(EQI_ACC_R, 3);
-			query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
-		    
-		    // Display information to the player.
-			dispbottom "Accessory Slot Shard Information.";
-			dispbottom "Item ID: " + .@var1;
-			dispbottom "Item Name: " + .@var2;
-			dispbottom "Experience Points: " + .@var3 + " / " + .@var4;
-		}
-		
+        if(EQI_ACC_L_FLAG) {
+            // Query the database
+            .@shardkey = getequipcardid(EQI_ACC_L, 2) << 16) + getequipcardid(EQI_ACC_L, 3);
+            query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
+
+            // Display information to the player.
+            dispbottom "Accessory Slot Shard Information.";
+            dispbottom "Item ID: " + .@var1;
+            dispbottom "Item Name: " + .@var2;
+            dispbottom "Experience Points: " + .@var3 + " / " + .@var4;
+        }
+
+        if(EQI_ACC_R_FLAG) {
+            // Query the database
+            .@shardkey = getequipcardid(EQI_ACC_R, 2) << 16) + getequipcardid(EQI_ACC_R, 3);
+            query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
+
+            // Display information to the player.
+            dispbottom "Accessory Slot Shard Information.";
+            dispbottom "Item ID: " + .@var1;
+            dispbottom "Item Name: " + .@var2;
+            dispbottom "Experience Points: " + .@var3 + " / " + .@var4;
+        }
+
         // Increase the usage counter by one. If the command is used 3 times
         // within 10 seconds, mute usage for 30 seconds.
         // ...
