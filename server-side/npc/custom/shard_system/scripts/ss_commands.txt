@@ -1,69 +1,56 @@
 -	script	SSCommands	-1,{
 end;
-
 	OnInit:
-		function getShardKey;
-		bindatcmd("shardinfo", "SSCommands::OnInfo",0,100,1);
-		bindatcmd("remakeshard", "SSCommands::OnRemake",70,100,1);
-		bindatcmd("newshard", "SSCommands::OnNewShard",70,100,1);
+		bindatcmd("shardinfo", "SSCommands::OnDisplayInfo",0,100,1);
+		bindatcmd("newshard", "SSCommands::OnCreateShard",70,100,1);
 		bindatcmd("listshards","SSCommands::OnListShards",60,100,1);
     end;
-	
-	function getShardKey {
-        return (getequipcardid(getarg(0), 2) << 16) + getequipcardid(getarg(0), 3);
-    }
 
-    // @shardinfo
-    // Provide the invoking player with equipped shard information.
-    // ItemID, ItemName, SBaseExp, SBaseNextLvl, DynamicBonus
-	// Add into config time that people will hsve to wait before getting info again
-	// Option with variable $ShardInfoWait
-	// In the mean time it'll return previous acquired info;
-	// Done to lessen the impact on SQL
-	// Making it 2 minutes on default.
-	OnInfo:
-		if( !$ShardInfoWait )
-			$ShardInfoWait = 2*60; //2 minutes on default
+    /**
+     * @shardinfo
+     * Provide the invoking player with equipped shard information.
+     * When the player uses the command x times within n seconds, mute
+     * command usage for m minutes.
+     * TODO: Incomplete
+     */
+	OnDisplayInfo:
+	    if(MUTED) {
+	        dispbottom "Please wait n seconds and try again.";
+	        end;
+	    }
 
-		if( !EQI_ACC_L_FLAG && !EQI_ACC_R_FLAG ) {
-			dispbottom "You don't have any Shard equipped.";
+		if(!EQI_ACC_L_FLAG && !EQI_ACC_R_FLAG) {
+			dispbottom "No shards are equipped on your character.";
 			end;
 		}
 		
-		if( gettimetick(2) > @lastshardinfo + $ShardInfoWait ) {
-			//Update info
-			@LeftFlag = EQI_ACC_L_FLAG;
-			if( EQI_ACC_L_FLAG ) {
-				.@key = getShardKey(EQI_ACC_L);
-				query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@L_shardID,@L_shardName$,@L_shardExp,@L_shardLevel);
-			}
-			
-			@RightFlag = EQI_ACC_R_FLAG;
-			if( EQI_ACC_R_FLAG ) {
-				.@key = getShardKey(EQI_ACC_R);
-				query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
-			}
-			@lastshardinfo = gettimetick(2);
-		} else {
-			dispbottom "Old information is presented. Please wait " + callfunc("Time2Str",@lastshardinfo + $ShardInfoWait) + " to get refreshed information.";
+		if(EQI_ACC_L_FLAG) {
+		    // Query the database
+		    .@shardkey = getequipcardid(EQI_ACC_L, 2) << 16) + getequipcardid(EQI_ACC_L, 3);
+			query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
+
+		    // Display information to the player.
+			dispbottom "Accessory Slot Shard Information.";
+			dispbottom "Item ID: " + .@var1;
+			dispbottom "Item Name: " + .@var2;
+			dispbottom "Experience Points: " + .@var3 + " / " + .@var4;
 		}
 		
-		if( @LeftFlag ) {
-			dispbottom "Left Accessory Slot Shard Information.";
-			dispbottom "Item ID: " + @L_shardID;
-			dispbottom "Name: " + @L_shardName$;
-			dispbottom "Experience Points: " + @L_shardExp;
-			dispbottom "Experience for next level: " + (@L_shardLevel * $shard_base_exp * $server_rate);
-			// dispbottom "Applied Bonus: " + ???;
+		if(EQI_ACC_R_FLAG) {
+		    // Query the database
+		    .@shardkey = getequipcardid(EQI_ACC_R, 2) << 16) + getequipcardid(EQI_ACC_R, 3);
+			query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
+		    
+		    // Display information to the player.
+			dispbottom "Accessory Slot Shard Information.";
+			dispbottom "Item ID: " + .@var1;
+			dispbottom "Item Name: " + .@var2;
+			dispbottom "Experience Points: " + .@var3 + " / " + .@var4;
 		}
-		if( @RightFlag ) {
-			dispbottom "Right Accessory Slot Shard Information.";
-			dispbottom "Item ID: " + @R_shardID;
-			dispbottom "Name: " + @R_shardName$;
-			dispbottom "Experience Points: " + @R_shardExp;
-			dispbottom "Experience for next level: " + (@R_shardLevel * $shard_base_exp * $server_rate);
-			// dispbottom "Applied Bonus: " + ???;
-		}
+		
+        // Increase the usage counter by one. If the command is used 3 times
+        // within 10 seconds, mute usage for 30 seconds.
+        // ...
     end;
 
     // @remakeshard <key>
