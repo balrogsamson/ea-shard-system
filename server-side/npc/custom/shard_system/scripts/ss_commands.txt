@@ -14,8 +14,8 @@ end;
      * TODO: Incomplete
      */
     OnDisplayInfo:
-        if(MUTED) {
-            dispbottom "Please wait n seconds and try again.";
+        if((@counter % 3) && ) {
+            dispbottom "Please wait "+ $atcmd_delay +" seconds and try again.";
             end;
         }
 
@@ -32,25 +32,36 @@ end;
             // Display information to the player.
             dispbottom "Accessory Slot Shard Information.";
             dispbottom "Item ID: " + .@var1;
-            dispbottom "Item Name: " + .@var2;
-            dispbottom "Experience Points: " + .@var3 + " / " + .@var4;
+            dispbottom "Item Name: " + .@var2 + " L" + .@var3;
+            dispbottom "Experience Points: " + .@var4 + " / " + .@var5;
         }
 
         if(EQI_ACC_R_FLAG) {
             // Query the database
             .@shardkey = getequipcardid(EQI_ACC_R, 2) << 16) + getequipcardid(EQI_ACC_R, 3);
-            query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
+            query_sql("SELECT (`item_id`, `item_name`, `base_exp`, `level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
 
             // Display information to the player.
             dispbottom "Accessory Slot Shard Information.";
             dispbottom "Item ID: " + .@var1;
-            dispbottom "Item Name: " + .@var2;
-            dispbottom "Experience Points: " + .@var3 + " / " + .@var4;
+            dispbottom "Item Name: " + .@var2 + " L" + .@var3;
+            dispbottom "Experience Points: " + .@var4 + " / " + .@var5;
         }
 
-        // Increase the usage counter by one. If the command is used 3 times
-        // within 10 seconds, mute usage for 30 seconds.
-        // ...
+        // Abuse Management
+        /**
+        	// Setup
+        	if( @Counter )
+        		@ShardInfoInvoked = gettimetick(2);
+        		
+        	// Determine if the user should be muted
+        	if((@Counter == 3) && (@ShardInfoInvoked + 5 <= gettimetick(2))) {
+        		// MUTE
+        	} else {
+        		// RESET INFORMATION
+        	}
+
+        */
     end;
 
     // @remakeshard <key>
