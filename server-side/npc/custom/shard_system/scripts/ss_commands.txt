@@ -1,5 +1,5 @@
 -	script	SSCommands	-1,{
-end;
+
     OnInit:
         bindatcmd("shardinfo", "SSCommands::OnDisplayInfo",0,100,1);
         bindatcmd("newshard", "SSCommands::OnCreateShard",70,100,1);
@@ -11,11 +11,10 @@ end;
      * Provide the invoking player with equipped shard information.
      * When the player uses the command x times within n seconds, mute
      * command usage for m minutes.
-     * TODO: Incomplete
      */
     OnDisplayInfo:
-        if((@counter % 3) && ) {
-            dispbottom "Please wait "+ $atcmd_delay +" seconds and try again.";
+        if(getttimetick(2) <= @InfoMuteTimer) {
+            dispbottom "Spamming detected. Please wait and try again.";
             end;
         }
 
@@ -49,19 +48,18 @@ end;
         }
 
         // Abuse Management
-        /**
-        	// Setup
-        	if( @Counter )
-        		@ShardInfoInvoked = gettimetick(2);
-        		
-        	// Determine if the user should be muted
-        	if((@Counter == 3) && (@ShardInfoInvoked + 5 <= gettimetick(2))) {
-        		// MUTE
-        	} else {
-        		// RESET INFORMATION
-        	}
+        if(@ShardInfoCounter)
+            @ShardInfoInvoked = gettimetick(2);
 
-        */
+        // Increase the usage counter by one.
+        @ShardInfoCounter += 1;
+
+        // Should the command be muted for the user?
+        // TODO: Replace literals with settings in conf file.
+        if((@ShardInfoCounter == 3) && (@ShardInfoInvoked + 5 <= getttimetick(2))) {
+            @ShardMuteTimer = gettimetick(2) + 60; // 1 min
+            @ShardInfoCounter = 0;
+        }
     end;
 
     // @remakeshard <key>
