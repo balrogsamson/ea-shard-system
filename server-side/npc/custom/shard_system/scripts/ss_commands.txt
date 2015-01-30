@@ -1,9 +1,10 @@
 -	script	SSCommands	-1,{
 
     OnInit:
-        bindatcmd("shardinfo", "SSCommands::OnDisplayInfo",0,100,1);
-        bindatcmd("newshard", "SSCommands::OnCreateShard",70,100,1);
-        bindatcmd("listshards","SSCommands::OnListShards",60,100,1);
+    	bindatcmd("si", "SSCommands::OnDisplayInfo", 0, 100, 1);
+        bindatcmd("shardinfo", "SSCommands::OnDisplayInfo", 0, 100, 1);
+        bindatcmd("newshard", "SSCommands::OnCreateShard", 70, 100, 1);
+        bindatcmd("listshards","SSCommands::OnListShards", 60, 100, 1);
     end;
 
     /**
@@ -13,7 +14,10 @@
      * command usage for m minutes.
      */
     OnDisplayInfo:
-        if(getttimetick(2) <= @InfoMuteTimer) {
+    	// Get the time the command was invoked.
+    	acmd_si_invoked = gettimetiick(2);
+
+        if(acmd_si_invoked <= acmd_si_mute) {
             dispbottom "Spamming detected. Please wait and try again.";
             end;
         }
@@ -48,17 +52,23 @@
         }
 
         // Abuse Management
-        if(@ShardInfoCounter)
-            @ShardInfoInvoked = gettimetick(2);
-
+        // When the command is first used after the counter resets.
+        // This determines how many times they used the command since first
+        // invocation.
+        if(!acmd_si_counter) {
+            acmd_si_first_invk = gettimetick(2);
+        }
+        
         // Increase the usage counter by one.
-        @ShardInfoCounter += 1;
+        acmd_si_counter += 1;
 
         // Should the command be muted for the user?
         // TODO: Replace literals with settings in conf file.
-        if((@ShardInfoCounter == 3) && (@ShardInfoInvoked + 5 <= getttimetick(2))) {
-            @ShardMuteTimer = gettimetick(2) + 60; // 1 min
-            @ShardInfoCounter = 0;
+        if((acmd_si_counter == 3) && (acmd_si_first_invk + 5 <= acmd_si_invoked)) {
+            acmd_si_mute = acmd_si_invoked + 60; // 1 min
+            acmd_si_counter = 0;
+        } else if(acmd_si_counter == 3) {
+            acmd_si_counter = 0; // reset the counter if they didnt spam
         }
     end;
 
