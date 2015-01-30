@@ -51,7 +51,7 @@
             dispbottom "Experience Points: " + .@var4 + " / " + .@var5;
         }
 
-        // Abuse Management
+        // --- Abuse Management ---
         // When the command is first used after the counter resets.
         // This determines how many times they used the command since first
         // invocation.
@@ -67,9 +67,11 @@
         if((acmd_si_counter == 3) && (acmd_si_first_invk + 5 <= acmd_si_invoked)) {
             acmd_si_mute = acmd_si_invoked + 60; // 1 min
             acmd_si_counter = 0;
-        } else if(acmd_si_counter == 3) {
-            acmd_si_counter = 0; // reset the counter if they didnt spam
         }
+        
+        // Reset the counter if spamming not detected.
+        if(acmd_si_counter == 3)
+            acmd_si_counter = 0;
     end;
 
     // @remakeshard <key>
