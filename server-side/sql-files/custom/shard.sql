@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS 'shard_db' (
     'owner_name' varchar(30) NOT NULL DEFAULT '',
     'wielder_aid', int(11) unsigned NOT NULL DEFAULT 0,
     'wielder_cid', int(11) unsigned NOT NULL DEFAULT 0,
-    'wielder_name, varchar(30) NOT NULL DEFAULT '',
+    'wielder_name', varchar(30) NOT NULL DEFAULT '',
     'item_id' int(11) unsigned NOT NULL DEFAULT 1,
     'item_name' varchar(30) NOT NULL DEFAULT '',
     'level' tinyint(2) NOT NULL DEFAULT 1,
