@@ -25,6 +25,5 @@ All shard database entries are required to include their name with level include
 * Create custom bonuses unique to the shard system.
 
 ### Project Challenges ###
-* Shards need to be balanced. We intend to release shards in incremental updates by generation. First generation shards are planned to provide base stat bonuses. Each generation should grow in complexity or ingenuity.
+* Shards need balance. We intend to remedy this by using incremental updates to test and release. First generation shards are planned to provide base stat bonuses whereas second and third will grow in complexity.
 * Queues will start as player specific and may eventually move to global (one script being the gatekeeper for database interaction). This is necessary. If a player were to kill 500 monsters in one swoop, 500 updates will be pushed. With the queue, after n seconds, 1 update will be pushed. Implementation is the major challenge.
-
