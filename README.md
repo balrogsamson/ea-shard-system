@@ -15,7 +15,21 @@ Data permanency across states is difficult in Athena. Although variable options 
 All shard database entries are required to include their name with level included. Each shard is typed as class 20. The wLv field is used to easily identify level without hassle. The _OnEquip_ and _OnUnequip_ fields will contain an event that will handle setup. Each shard is planned to have a script updating the current holder, but will not be in the release candidate.<br>
 
 ```
-25565,Burning_Shard_LV1,Burning Shard LV1,20,,,100,,,,1,0xFFFFFFFF,11,2,136,1,50,,,{ // item script },{ doevent "SSEventListener::OnPCEquipEvent"; },{ doevent "SSEventListener::OnPCUnequipEvent"; }
+{
+	Id: 25000
+	AegisName: "Shard_of_Prueba_Lv1"
+	Name: "Shard of Prueba Lv1"
+	Type: 5
+	Weight: 10
+	Slots: 1
+	Job: 0xFFFFFFFE
+	Loc: 136
+	WeaponLv: 1
+	Refine: false
+	Script: <" // script code ">
+	OnEquipScript: <" doevent "SSEventListener::OnPCEquipEvent"; ">
+	OnUnequipScript: <" doevent "SSEventListener::OnPCUnequipEvent"; ">
+}
 ```
 
 ### Project Goals ###
