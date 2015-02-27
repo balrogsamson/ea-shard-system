@@ -7,9 +7,25 @@ A shard is an expansion accessory that includes a leveling system. When a player
 
 Technical Specification
 =======================
-Data permanency across states is difficult in Athena. Although variable options (dymanic variables) exist, they create messy code. Instead we use a database and slots to track information no matter where the item goes. 32-bits of data are allocated to represent the database entry's primary key (which are applied to the last two slots of the shard). The following 16 bits are planned, but not currently implemented. Some ideas:
-* Dynamic bonuses (eg. ... of the Suffix, Prefixed ...)
-* Variable bonuses (eg. +1 STR - +5 STR)
+Data permanency on items is normally difficult in Ragnarok. Fortunately, slots are unique 16-bit data structures which are permanent across the game whether traded or stored. Due to constraints, 48-bits are available for usage which is further reduced to 32-bits if the item contains an open slot for players. 32 bits are used for accessing shard metadata within the database and the optional 16 are planned for dynamic bonuses.
+
+#### Dynamic Bonuses ####
+Stardization is key to the process of variable bonuses. Because 16 bits is such a large amount (65k roughly) we can seperate this data into 4-bit sets (or even 2-bit) that represent stat bonuses or even store optional data which can be easily accessed with bit hackery when accessing the slot. For this to work, the item must not have any slots listed in the database.
+
+```
+// Generate dynamic stats for a traditional 4-bit block type.
+// Note: stats should not exceed 0xF or 15.
+.@stat = rand(0x0, 0x7);
+
+// Generate the item with the fourth slot storing info.
+getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,.@stat;
+```
+```
+// Access card info on the item.
+<"
+	bonus bStr, 3 + callfunc("determineBonus");
+">
+```
 
 ### Shard Entries ###
 All shard database entries are required to include their name with level included. Each shard is typed as class 20. The wLv field is used to easily identify level without hassle. The _OnEquip_ and _OnUnequip_ fields will contain an event that will handle setup. Each shard is planned to have a script updating the current holder, but will not be in the release candidate.<br>
