@@ -27,6 +27,8 @@ getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,.@stat;
 ">
 ```
 
+Additionally, a small source code edit will be required that will expand the typical 4 slot system into an 8 slot system. However, the additional 8 slots will be used for handling dynamic bonuses providing unlimited (64-bits) of freedom!
+
 ### Shard Entries ###
 All shard database entries are required to include their name with level included. Each shard is typed as class 20. The wLv field is used to easily identify level without hassle. The _OnEquip_ and _OnUnequip_ fields will contain an event that will handle setup. Each shard is planned to have a script updating the current holder, but will not be in the release candidate.<br>
 
@@ -53,6 +55,7 @@ All shard database entries are required to include their name with level include
 * Reduce database load by creating a basic update queue that groups update types. After n seconds, push updates with m millisecond delay.
 * Create an installation shell script that stores the server-side files into the server directory.
 * Create custom bonuses unique to the shard system.
+* Create some system of termination so a shard does not level up once it's at max.
 
 ### Project Challenges ###
 * Shards need balance. We intend to remedy this by using incremental updates to test and release. First generation shards are planned to provide base stat bonuses whereas second and third will grow in complexity.
