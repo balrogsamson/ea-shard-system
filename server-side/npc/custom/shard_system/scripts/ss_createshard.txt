@@ -5,27 +5,31 @@
  * Ex. SSCreateShard(11564);
  */
 function	script	SSCreateShard	{
-    // Exception catch.
-    if(getarg(0,0) == 0 || getitemname(getarg(0,0)) == "null") {
-        debugmes "[Error] SSCreateShard called with invalid argument " + getarg(0,0);
-        return;
-    }
-
     // Data definition.
-    .@shard_id = getarg(0);
+    .@item_id = getarg(0);
+	.@char_id = getcharid(0);
 
-    // Create a new shard entry in the DB.
-    query_sql("INSERT INTO `shard_db` (`owner_cid`, `owner_name`, `owner_aid`, `item_id`, `item_name`, `date_created`) VALUES("+ getcharid(0) +", '"+ escape_sql(strcharinfo(0)) +"', "+ getcharid(3) +", "+ .@shard_id +", '"+ escape_sql(getitemname(.@shard_id)) +"', GETDATE())" );
+    // Create a new entry within the database. After creation, find the
+	// new item's database primary key by using the char_id and item_id.
+    query_sql("INSERT INTO `shard_db` (`char_id`, `item_id`, `date_created`) VALUES("+ .@char_id +", "+ .@item_id +", GETDATE())");
+    query_sql("SELECT `id` FROM `shard_db` WHERE `char_id` = "+ .@char_id +" AND `item_id` = "+ .@item_id +" ORDER BY `date_created` DESC LIMIT 1", .@db_key);
 
-    // Select the newest shard entry.
-    query_sql("SELECT `id` FROM `shard_db` WHERE `owner_id` = "+ getcharid(0) +" ORDER BY `date_created` DESC LIMIT 1", .@shard_key);
+    // Segment the 32-bit primary key and store it into the card slots. 
+	// This value is only used to find the item within the shard_db.
+    .@card2 = .@db_primary_key >> 16;
+    .@card3 = .@db_primary_key & 65535;
 
-    // Segment the 32-bit primary key.
-    .@card2 = .@shard_key[0] >> 16;
-    .@card3 = .@shard_key[0] & 65535;
+    // Provide the player with the item and store the temporary primary
+	// key inside the card slots.
+    getitem2 .@item_id,1,1,0,0,-255,.@card2,.@card3,0;
 
-    // Provide the player with the shard.
-    getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
-    return;
+	// Use the 32-bit primary key to find the generated item's unique id.
+	// After finding it, store that value into the items db entry.
+	query_sql("SELECT `unique_id` FROM `inventory` WHERE `card0` = -255 AND `card1` = "+ .@card2 +" AND `card2` = "+ .@card3, .@unique_id); 
+	query_sql("UPDATE `shard_db` SET `unique_id` = "+ .@unique_id +" WHERE `id` = "+ .@db_primary_key);
+
+	// Remove the primary key from the card slots since unique id can suffice.
+	query_sql("UPDATE `inventory` SET `card1` = 0, `card2` = 0 WHERE `unique_id` = "+ .@unique_id);
+    return 0;
 }
 

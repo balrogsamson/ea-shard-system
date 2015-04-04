@@ -1,17 +1,13 @@
 /**
- * When a shard is equipped, find the equip slot, turn on
- * the EQI_ACC_SLOT_FLAG where SLOT is L or R.
- *
- * When a monster is killed my a PC, invoke SSEventListener
- * to distribute experience. Invoke SSEventHandler to manage
- * calculations.
+ * ...
  */
 -	script	SSEventListener	-1,{
     // Function definitions.
     function distributeExperience;
-    function updateFlags;
     function shardEquipped;
-    
+    function updateFlags;
+
+	// Initialize all variables on login.
     OnPCLoginEvent:
         if(shardEquipped()) {
             @BaseExp = BaseExp;
@@ -20,53 +16,110 @@
         }
     end;
 
+	// When the player equips a dynamic item,
+	// the equipment flags are updated, and the
+	// experience and level variables are set.
     OnPCEquipEvent:
         updateFlags();
         @BaseExp = BaseExp;
         @NextBaseExp = NextBaseExp;
         @BaseLevel = BaseLevel;
     end;
-    
+
+	// When the player unequips a dynamic item,
+	// the equipment flags are updated.
     OnPCUnequipEvent:
         updateFlags();
     end;
-    
-    OnNPCKillEvent:
-        if(shardEquipped() && (@BaseLevel == BaseLevel)) {
-            @GainedExp = BaseExp - @BasedExp;
-            @BaseExp = BaseExp;
-            distributeExperience;
-        } 
-        
-        if(shardEquipped() && (@BaseLevel < BaseLevel)) {
-            @GainedExp = BaseExp + (@NextBaseExp - @BaseExp);
-            @BaseExp = BaseExp;
-            @NextBaseExp = NextBaseExp;
-            @BaseLevel = BaseLevel;
-            distributeExperience();
-        }
-    end;
 
+	// Whenever a monster is killed the database update timer
+	// is initiated. Additionally, if the player's level has not 
+	// changed, calculate gained experience.
+    OnNPCKillEvent:
+		if(shardEquipped()) {
+			if(!@DB_UPDATE_TIMER_FLAG) {
+				addtimer $db_wait_timer, "SSEventListener::OnDBUpdateEvent";
+				@DB_UPDATE_TIMER_FLAG = true;
+			}
+
+			if(@BaseLevel == BaseLevel) {
+				@GainedExp += BaseExp - @BaseExp;
+				@BaseExp = BaseExp;
+			}
+		}
+    end;
+	
+	// Transfers experience points between levels.
+	OnPCBaseLvUpEvent:
+		if(shardEquipped() && (BaseExp == NextBaseExp)) {
+			@GainedExp += NextBaseExp;
+			@BaseExp = BaseExp;
+			@NextBaseExp = NextBaseExp;
+			@BaseLevel = BaseLevel;
+		} else {
+			@GainedExp += BaseExp + (@NextBaseExp - @BaseExp);
+			@BaseExp = BaseExp;
+			@NextBaseExp = NextBaseExp;
+			@BaseLevel = BaseLevel;
+		}
+	end;
+	
+	// Database multiplexing function. Every $db_update_timer
+	// milliseconds, call this label which calls the event handler
+	// to manage experience.
+	OnDBUpdateEvent:
+		// Increase the idle timer by $db_update_timer.
+		@db_idle_counter += $db_update_timer;
+
+		// When a shard is not equipped, disable the
+		// database update timer if no exp has been gained.
+		if(!@GainedExp && !shardEquipped()) {
+			deltimer "SSEventListener::OnDBUpdateEvent";
+			@DB_UPDATE_TIMER_FLAG = false;
+			@db_idle_counter = 0;
+		}
+		
+		// When the player is idle for one minute, disable
+		// the database update timer if no exp has been gained.
+		if(!@GainedExp && (@db_idle_counter >= $db_idle_limit)) {
+			deltimer "SSEventListener::OnDBUpdateEvent";
+			@DB_UPDATE_TIMER_FLAG = false;
+			@db_idle_counter = 0;
+		} else { 
+			distributeExperience();
+			@db_idle_counter = 0;
+			@GainedExp = 0;
+		}
+	end;
+
+	// Distributes experience to the event handler. Before being
+	// distributed, experience is scrubbed of any server rate bonuses.
+	// When two items are equipped, gained experience is cut in half.
     function    distributeExperience {
         if(EQI_ACC_L_FLAG && EQI_ACC_R_FLAG) {
+			@GainedExp = ((@GainedExp * 100) / $server_rate);
             callfunc("SSEventHandler", EQI_ACC_L, @GainedExp / 2);
             callfunc("SSEventHandler", EQI_ACC_R, @GainedExp / 2);
 			return;
         }
-        
+
         // Hey, may work?
         if(EQI_ACC_L_FLAG || EQI_ACC_R_FLAG) {
+			@GainedExp = ((@GainedExp * 100) / $server_rate);
             callfunc("SSEventHandler", (EQI_ACC_L_FLAG ? EQI_ACC_L : EQI_ACC_R), @GainedExp);
-            return;
-        }
+			return;
+		}
     }
-    
+
+	// Updates equipment flags. These determined if a dynamic
+	// item is equipped or not.
     function    updateFlags {
-        EQI_ACC_L_FLAG = (getiteminfo(getequipid(EQI_ACC_L), 2) == 20 ? true : false);
-        EQI_ACC_R_FLAG = (getiteminfo(getequipid(EQI_ACC_R), 2) == 20 ? true : false);
+        EQI_ACC_L_FLAG = (getiteminfo(getequipid(EQI_ACC_L), 2) == $shard_type ? true : false);
+        EQI_ACC_R_FLAG = (getiteminfo(getequipid(EQI_ACC_R), 2) == $shard_type ? true : false);
         return;
     }
 
+	// Boolean that determines whether dynamic items are equipped.
     function    shardEquipped {
         return EQI_ACC_L_FLAG || EQI_ACC_R_FLAG;
     }

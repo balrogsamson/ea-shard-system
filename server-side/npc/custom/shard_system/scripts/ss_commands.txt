@@ -3,15 +3,14 @@
     OnInit:
     	bindatcmd("si", "SSCommands::OnDisplayInfo", 0, 100, 1);
         bindatcmd("shardinfo", "SSCommands::OnDisplayInfo", 0, 100, 1);
-        bindatcmd("newshard", "SSCommands::OnCreateShard", 70, 100, 1);
         bindatcmd("listshards","SSCommands::OnListShards", 60, 100, 1);
+        bindatcmd("rescueshard", "SSCommands::OnCreateShard", 70, 100, 1);
     end;
 
     /**
-     * @shardinfo
-     * Provide the invoking player with equipped shard information.
-     * When the player uses the command x times within n seconds, mute
-     * command usage for m minutes.
+     * @command shardinfo
+     * @description Provide the invoking player with equipped shard
+     * information. Any spamming will mute the command from usage.
      */
     OnDisplayInfo:
     	// Get the time the command was invoked.
@@ -29,38 +28,35 @@
 
         if(EQI_ACC_L_FLAG) {
             // Query the database
-            .@shardkey = getequipcardid(EQI_ACC_L, 2) << 16) + getequipcardid(EQI_ACC_L, 3);
-            query_sql("SELECT (`item_id`,`item_name`,`base_exp`,`level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
+            query_sql("SELECT `unique_id` FROM `inventory` WHERE `char_id` = "+ getcharid(0) +" AND `equip` = "+ EQI_ACC_L, .@unique_id);
+            query_sql("SELECT `item_id`, `base_exp`, `next_exp` FROM `shard_db` WHERE `unique_id` = "+ .@unique_id, .@item_id, .@base_exp, .@next_exp);
 
             // Display information to the player.
-            dispbottom "Accessory Slot Shard Information.";
-            dispbottom "Item ID: " + .@var1;
-            dispbottom "Item Name: " + .@var2 + " L" + .@var3;
-            dispbottom "Experience Points: " + .@var4 + " / " + .@var5;
+            dispbottom "Item Name: " + getitemname(.@item_id);
+            dispbottom "Experience Points: " + .@base_exp + " / " + .@next_exp;
+            dispbottom ((.base_exp * 100)) / .@next_exp) + "% to next level.";
         }
 
         if(EQI_ACC_R_FLAG) {
             // Query the database
-            .@shardkey = getequipcardid(EQI_ACC_R, 2) << 16) + getequipcardid(EQI_ACC_R, 3);
-            query_sql("SELECT (`item_id`, `item_name`, `base_exp`, `level`) FROM `shard_db` WHERE `id` = " + .@key,@R_shardID,@R_shardName$,@R_shardExp,@R_shardLevel);
+            query_sql("SELECT `unique_id` FROM `inventory` WHERE `char_id` = "+ getcharid(0) +" AND `equip` = "+ EQI_ACC_R, .@unique_id);
+            query_sql("SELECT `item_id`, `base_exp`, `next_exp` FROM `shard_db` WHERE `unique_id` = "+ .@unique_id, .@item_id, .@base_exp, .@next_exp);
 
             // Display information to the player.
-            dispbottom "Accessory Slot Shard Information.";
-            dispbottom "Item ID: " + .@var1;
-            dispbottom "Item Name: " + .@var2 + " L" + .@var3;
-            dispbottom "Experience Points: " + .@var4 + " / " + .@var5;
+            dispbottom "Item Name: " + .@getitemname(.@item_id);
+            dispbottom "Experience Points: " + .@base_exp + " / " + .@next_exp;
+            dispbottom ((.base_exp * 100)) / .@next_exp) +"% to next level.";
         }
 
         // --- Abuse Management ---
         // When the command is first used after the counter resets.
         // This determines how many times they used the command since first
         // invocation.
-        if(!acmd_si_counter) {
+        if(!acmd_si_counter)
             acmd_si_first_invk = gettimetick(2);
-        }
         
         // Increase the usage counter by one.
-        acmd_si_counter += 1;
+        acmd_si_counter++;
 
         // Should the command be muted for the user?
         // TODO: Replace literals with settings in conf file.
@@ -74,35 +70,54 @@
             acmd_si_counter = 0;
     end;
 
-    // @remakeshard <key>
-    // GM shard retrieval tool. Used to recreate shards for
-    // any player who may have lost it.
-	OnRemake:
-		if( .@atcmd_numparameters != 1 ) {
-			dispbottom "Usage: @remakeshard <numerical key>";
-			end;
-		}
-	
-		.@key = atoi(.@atcmd_parameters$[0]);
-		if( !.@key ) {
-			dispbottom "Invalid key provided.";
-			end;
-		}
-	
-		if( query_sql("SELECT (`item_id`,`owner_cid`,`wielder_cid`) FROM `shard_db` WHERE `id` = " + .@key,.@shard_id,.@ocid,.@wcid) < 1 ) {
-			dispbottom "There's no shard with such key.";
-			end;
-		}
-	
-		.@card2 = .@key >> 16;
-		.@card3 = .@key & 65535;
-		
-		getitem2 .@shard_id,1,1,0,0,-255,.@card2,.@card3,0;
-		
-		dispbottom "Shard recreated. Last stored information:";
-		dispbottom "Wielder CharID: " + .@wcid + " Creator CharID: " + .@ocid;
-		dispbottom "Please recheck the information and make sure that previous copy is indeed lost before giving the item to the player.";
-	end;
+    /**
+     * @command rescueshard {player_name}
+     * @description GM item management tool. Used to recreate
+     * a dynamic item for any player who may have lost it. The
+     * command will not create another item if the item is found.
+     */
+	OnRetrieval:
+        // ...
+    
+        // Search the database for all items that the player has made.
+        query_sql("SELECT `item_id`, `unique_id`, `date_created` FROM `shard_db` WHERE `char_id` = "+ getarg(0) +" ORDER BY `date_created` DESC", .@item_id, .@unique_id, .@date$);
+        
+        // Generate a dynamic menu which displays each match.
+        // ex. 0000-00-00 | Shard of Prueba Lv. 3
+        for( .@i = 0; .@i < getarraysize(); .@i++)
+            .@itemlist$ += substr(.@date$[i], 0, 10) + " | " + getitemname(.@item_id[i]) + ":";
+
+        // Create a menu for the player.
+        .@menu = prompt(.@itemlist$) - 1;
+        
+        // Player can only exit the loop if they cancel.
+        while(.@menu != 0xFF) {
+            // Does the item exist in other places?
+            // mysql query
+            
+            mes "[Management Console]";
+            mes "ID "+ .@item_id[] +" was found in the shard_db. Last ";
+            mes "seen on user "+ getcharname(.@char_id[], 0);";
+            
+            // Create a menu for the player.
+            .@val = prompt(.@menu$) - 1;
+        }
+        
+        // WHILE LOOP
+            // Generate a dynamic menu displaying each match.
+            // 1. 0000-00-00 00:00:00 | Shard of Prueba Lv. 1 
+            // 2. 0000-00-00 00:00:00 | Shard of Volcanic Burst Lv. 3 
+            // ...
+            
+            // Use .@unique_id[@menu] to search these tables for the item:
+            // `inventory`, `cart_inventory`, `storage`, `guild_storage`
+            
+            // If found
+                // Show window of results. Log results.
+            // If nothing found
+                // recreate item  
+        // end
+	end;*/
 
 	// @newshard <Item ID>,{<charID>}
     // GM new shard creation. Created shard <Item ID>

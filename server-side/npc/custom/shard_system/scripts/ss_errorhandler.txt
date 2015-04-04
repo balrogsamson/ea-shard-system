@@ -1,0 +1,38 @@
+/**
+ * Status reporter which provides handles error
+ * and success codes displaying them in the server
+ * console window. Currently not in use.
+ * @param {string}  origin      Origin of error.
+ * @param {integer} status_code The error code.
+ * @param {string}  comments    Optional data.
+ */
+function    script  SSErrorReporter  {
+    // Parameters.
+    .@origin        = getarg(0);
+    .@status_code   = getarg(1);
+    .@comments      = getarg(2);
+    
+    // Status reporter.
+    switch(.@status_code) {
+		// 1xx - GENERAL INFORMATION
+		case 100:
+            debugmes .@origin + " (100):";
+		break;
+		
+		// 2xx - EXECUTION SUCCESS
+		case 200:
+            debugmes .@origin + " (200):";
+		break;
+		
+		// 3xx - GENERAL SCRIPT ERROR
+		case 300:
+            debugmes .@origin + " (300):";
+		break;
+		
+		// ERR - INCORRECT ERROR CODE
+        case default:
+			debugmes .@origin + " (ERR): Incorrect status code provided.";
+			debugmes "Please refer to project documentation for all status codes.";
+		break;
+    }
+}

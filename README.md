@@ -10,7 +10,7 @@ Technical Specification
 Data permanency on items is normally difficult in Ragnarok. Fortunately, slots are unique 16-bit data structures which are permanent across the game whether traded or stored. Due to constraints, 48-bits are available for usage which is further reduced to 32-bits if the item contains an open slot for players. 32 bits are used for accessing shard metadata within the database and the optional 16 are planned for dynamic bonuses.
 
 #### Dynamic Bonuses ####
-Stardization is key to the process of variable bonuses. Because 16 bits is such a large amount (65k roughly) we can seperate this data into 4-bit sets (or even 2-bit) that represent stat bonuses or even store optional data which can be easily accessed with bit hackery when accessing the slot. For this to work, the item must not have any slots listed in the database.
+Stardization is key to the process of variable bonuses. Because 16 bits is such a large amount (65k roughly) we can seperate this data into 4-bit sets (or even 2-bit) that represent stat bonuses or even store optional data which can be easily accessed with bit hackery when accessing the slot. For this to work, the item must not have any slots listed in the database. Here's some psuedocode:
 
 ```
 // Generate dynamic stats for a traditional 4-bit block type.
