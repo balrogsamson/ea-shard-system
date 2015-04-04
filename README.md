@@ -1,7 +1,7 @@
-Ragnarok Online Shard System
+Ragnarok Online Dynamic Item System
 ============================
 Originally inspired by the materia system in Final Fantasy VII.<br>
-Further inspired by the scripts on ghxRO, an old private server.<br>
+Further inspired by the scripts on ghxRO, an old private RO server.<br>
 
 A shard is an expansion accessory that includes a leveling system. When a player kills a monster, a piece of the experience is added directly to the shard. When the experience threshold is met the item will level up. This can mean an increase in stats for the player, party, or guild. Each shard has a completed crystal form when maximum level is attained. The shard system has only been tested on rAthena server emulation software.
 
@@ -51,12 +51,9 @@ All shard database entries are required to include their name with level include
 ```
 
 ### Project Goals ###
-* Create a scalable function for next level experience in the handler script.
-* Reduce database load by creating a basic update queue that groups update types. After n seconds, push updates with m millisecond delay.
 * Create an installation shell script that stores the server-side files into the server directory.
 * Create custom bonuses unique to the shard system.
 * Create some system of termination so a shard does not level up once it's at max.
 
 ### Project Challenges ###
 * Shards need balance. We intend to remedy this by using incremental updates to test and release. First generation shards are planned to provide base stat bonuses whereas second and third will grow in complexity.
-* Queues will start as player specific and may eventually move to global (one script being the gatekeeper for database interaction). This is necessary. If a player were to kill 500 monsters in one swoop, 500 updates will be pushed. With the queue, after n seconds, 1 update will be pushed. Implementation is the major challenge.
