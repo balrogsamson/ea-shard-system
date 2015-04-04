@@ -1,13 +1,19 @@
 /**
  * Creates a new shard. This function is used to setup a
  * new shard with a database entry and store its key.
- * @param shard_id The id of the shard to give to the player.
- * Ex. SSCreateShard(11564);
+ * @param {integer} shard_id 
  */
 function	script	SSCreateShard	{
     // Data definition.
     .@item_id = getarg(0);
 	.@char_id = getcharid(0);
+    
+    // Only prepare dynamic items if the database entry
+	// item type matches system.conf defined item type.
+    //if(getarg(0) != 0x10) {
+    //    callfunc("SSErrorHandler", 304, "Incorrect parameter most likely provided by @command.");
+    //    return 1;
+    //}
 
     // Create a new entry within the database. After creation, find the
 	// new item's database primary key by using the char_id and item_id.

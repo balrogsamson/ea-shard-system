@@ -1,8 +1,9 @@
 /**
- * Provides experience to the shard then upgrades it when level threshold is met.
- * TODO: Rewrite to use UNIQUE_ID rather than this card nonsense.
- * @param shard_pos equipment slot for clarification
- * @param shard_exp experience to be modified then provided
+ * Data provided by the listener function. Provides experience
+ * to a shard then upgrades it when the experience threshold is
+ * met. See the getNextExp() function for necessary experience.
+ * @param {integer} shard_pos 
+ * @param {integer} shard_exp 
  */
 function	script	SSEventHandler	{
     // Local function declarations.
@@ -37,8 +38,7 @@ function	script	SSEventHandler	{
     // MAIN FUNCTIONS
     // ========================================================================
     /** 
-     * Returns the last slain mob's total experience.
-     * Scales up to level 99.
+     * Returns the last slain mob's total experience gained.
      * @param {integer} base_exp experience gained by killing a monster
      */
     function getBaseExp {
@@ -61,7 +61,7 @@ function	script	SSEventHandler	{
      * To level 3: 7,804,480
      * To level 4: 11,499,840
      * To level 5: 21,257,640
-     * @param shard_lvl the equipped shard level
+     * @param {integer} shard_lvl the equipped shard level
      */
     function getNextExp    {
         // Calculate the inner part of the equation.
@@ -91,8 +91,8 @@ function	script	SSEventHandler	{
         // Temporarily store the primary key.
         delequip getarg(0);
         getitem2 (getequipid(getarg(0)) + 1),1,1,0,0,-255,.@card2,.@card3,0;
-        equip2 (getequipid(getarg(0)) + 1),1,1,0,0,-255,.@card2,.@card3,0;
-
+		equip2 (getequipid(getarg(0)) + 1),0,0,-255,.@card2,.@card3,0;
+		
         // Use the stored key to find the new item's unique ID.
         query_sql("SELECT `unique_id` FROM `inventory` WHERE `card0` = -255 AND `card1` = "+ .@card2 +" AND `card2` = "+ .@card3, .@db_unique_id);
 

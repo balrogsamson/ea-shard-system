@@ -1,5 +1,6 @@
 /**
- * ...
+ * Listens for all dynamic item events and forwards
+ * all back-end calculations to the handler function.
  */
 -	script	SSEventListener	-1,{
     // Function definitions.
@@ -42,9 +43,11 @@
 				@DB_UPDATE_TIMER_FLAG = true;
 			}
 
-			if(@BaseLevel == BaseLevel) {
+			if(@BaseLevel == BaseLevel && BaseLevel != MAX_LEVEL) {
 				@GainedExp += BaseExp - @BaseExp;
 				@BaseExp = BaseExp;
+			} else {
+				@GainedExp += getmonsterinfo(killedrid, MOB_BASEEXP);
 			}
 		}
     end;

@@ -1,3 +1,6 @@
+/**
+ *
+ */
 -	script	SSCommands	-1,{
 
     OnInit:
@@ -34,7 +37,7 @@
             // Display information to the player.
             dispbottom "Item Name: " + getitemname(.@item_id);
             dispbottom "Experience Points: " + .@base_exp + " / " + .@next_exp;
-            dispbottom ((.base_exp * 100)) / .@next_exp) + "% to next level.";
+            dispbottom ((.@base_exp * 100)) / .@next_exp) + "% to next level.";
         }
 
         if(EQI_ACC_R_FLAG) {
@@ -45,7 +48,7 @@
             // Display information to the player.
             dispbottom "Item Name: " + .@getitemname(.@item_id);
             dispbottom "Experience Points: " + .@base_exp + " / " + .@next_exp;
-            dispbottom ((.base_exp * 100)) / .@next_exp) +"% to next level.";
+            dispbottom ((.@base_exp * 100)) / .@next_exp) +"% to next level.";
         }
 
         // --- Abuse Management ---
@@ -77,8 +80,6 @@
      * command will not create another item if the item is found.
      */
 	OnRetrieval:
-        // ...
-    
         // Search the database for all items that the player has made.
         query_sql("SELECT `item_id`, `unique_id`, `date_created` FROM `shard_db` WHERE `char_id` = "+ getarg(0) +" ORDER BY `date_created` DESC", .@item_id, .@unique_id, .@date$);
         
@@ -92,32 +93,23 @@
         
         // Player can only exit the loop if they cancel.
         while(.@menu != 0xFF) {
-            // Does the item exist in other places?
-            // mysql query
-            
-            mes "[Management Console]";
-            mes "ID "+ .@item_id[] +" was found in the shard_db. Last ";
-            mes "seen on user "+ getcharname(.@char_id[], 0);";
-            
-            // Create a menu for the player.
-            .@val = prompt(.@menu$) - 1;
+            // Does the item exist elsewhere?
+			// check `inventory`, `cart_inventory`, `storage`, `guild_storage`
+			query_sql("SELECT * FROM `` WHERE `unique_id` = "+ .@unique_id[.@menu]);
+
+            // Display information to the GM.
+			if(.@unique_id[.@menu] != 0) {
+				mes "[Management Console]";
+				mes "Item not found anywhere. Deleted?";
+			} else {
+				mes "[Management Console]";
+				mes "Player attempting to scam GM? Item found.";
+			}
+
+			// Re-create the menu for the player.
+            .@menu = prompt(.@itemlist$) - 1;
         }
-        
-        // WHILE LOOP
-            // Generate a dynamic menu displaying each match.
-            // 1. 0000-00-00 00:00:00 | Shard of Prueba Lv. 1 
-            // 2. 0000-00-00 00:00:00 | Shard of Volcanic Burst Lv. 3 
-            // ...
-            
-            // Use .@unique_id[@menu] to search these tables for the item:
-            // `inventory`, `cart_inventory`, `storage`, `guild_storage`
-            
-            // If found
-                // Show window of results. Log results.
-            // If nothing found
-                // recreate item  
-        // end
-	end;*/
+	end;
 
 	// @newshard <Item ID>,{<charID>}
     // GM new shard creation. Created shard <Item ID>
