@@ -8,7 +8,7 @@
     function shardEquipped;
     function updateFlags;
 
-	// Initialize all variables on login.
+    // Initialize all variables on login.
     OnPCLoginEvent:
         if(shardEquipped()) {
             @BaseExp = BaseExp;
@@ -17,9 +17,9 @@
         }
     end;
 
-	// When the player equips a dynamic item,
-	// the equipment flags are updated, and the
-	// experience and level variables are set.
+    // When the player equips a dynamic item,
+    // the equipment flags are updated, and the
+    // experience and level variables are set.
     OnPCEquipEvent:
         updateFlags();
         @BaseExp = BaseExp;
@@ -27,29 +27,29 @@
         @BaseLevel = BaseLevel;
     end;
 
-	// When the player unequips a dynamic item,
-	// the equipment flags are updated.
+    // When the player unequips a dynamic item,
+    // the equipment flags are updated.
     OnPCUnequipEvent:
         updateFlags();
     end;
 
-	// Whenever a monster is killed the database update timer
-	// is initiated. Additionally, if the player's level has not 
-	// changed, calculate gained experience.
+    // Whenever a monster is killed the database update timer
+    // is initiated. Additionally, if the player's level has not 
+    // changed, calculate gained experience.
     OnNPCKillEvent:
-		if(shardEquipped()) {
-			if(!@DB_UPDATE_TIMER_FLAG) {
-				addtimer $db_wait_timer, "SSEventListener::OnDBUpdateEvent";
-				@DB_UPDATE_TIMER_FLAG = true;
-			}
+        if(shardEquipped()) {
+	    if(!@DB_UPDATE_TIMER_FLAG) {
+		addtimer $db_wait_timer, "SSEventListener::OnDBUpdateEvent";
+		@DB_UPDATE_TIMER_FLAG = true;
+	    }
 
-			if(@BaseLevel == BaseLevel && BaseLevel != MAX_LEVEL) {
-				@GainedExp += BaseExp - @BaseExp;
-				@BaseExp = BaseExp;
-			} else {
-				@GainedExp += getmonsterinfo(killedrid, MOB_BASEEXP);
-			}
-		}
+	    if(@BaseLevel == BaseLevel && BaseLevel != MAX_LEVEL) {
+	        @GainedExp += BaseExp - @BaseExp;
+	        @BaseExp = BaseExp;
+	    } else {
+	        @GainedExp += getmonsterinfo(killedrid, MOB_BASEEXP);
+	    }
+        }
     end;
 	
 	// Transfers experience points between levels.
